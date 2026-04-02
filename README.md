@@ -117,6 +117,13 @@ src/
 
 ---
 
+
+## 📈 V2 Performance Planning
+
+- Roadmap with 20 scale-focused performance improvements: `docs/performance/v2-performance-roadmap.md`
+- Repo-native tracker sheet: `docs/performance/task-tracker.md`
+- Issue template for each task: `.github/ISSUE_TEMPLATE/performance-task.md`
+
 ## 👤 About
 
 **Pujith M** — Senior Software Engineer & Blockchain Expert based in Bengaluru.
