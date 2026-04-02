@@ -1,13 +1,13 @@
-import { Text, Float, Image } from '@react-three/drei'
+import { Text, Float } from '@react-three/drei'
 
 export function Hero3D() {
   return (
     <group position={[0, 0, 0]}>
       {/* 3D Intro Text - Centered & Floating */}
       <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
-        <group position={[0, 4, -8]}>
+        <group position={[0, 6.4, -16]}>
           <Text 
-            fontSize={2} 
+            fontSize={1.35} 
             color="white" 
             anchorX="center" 
             outlineWidth={0.04}
@@ -16,12 +16,14 @@ export function Hero3D() {
             PUJITH M
           </Text>
           <Text 
-            position={[0, -1, 0]}
-            fontSize={0.6} 
+            position={[0, -0.85, 0]}
+            fontSize={0.42} 
             color="#3b82f6" 
             anchorX="center" 
             outlineWidth={0.02}
             outlineColor="#020617"
+            maxWidth={12}
+            textAlign="center"
           >
             SENIOR SOFTWARE ENGINEER | BLOCKCHAIN EXPERT
           </Text>
