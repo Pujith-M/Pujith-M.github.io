@@ -1,7 +1,7 @@
 import { Suspense, lazy, useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { ScrollControls, useScroll, Float, BakeShadows } from '@react-three/drei'
+import { ScrollControls, useScroll, Float, BakeShadows, Environment } from '@react-three/drei'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import { Perf } from 'r3f-perf'
 import { Car } from './components/Car'
@@ -134,7 +134,8 @@ function App() {
         <color attach="background" args={['#030014']} />
         <fog attach="fog" args={['#030014', 15, 60]} />
         
-        <ambientLight intensity={2} />
+        <ambientLight intensity={1.5} />
+        <Environment preset="city" />
         <directionalLight position={[10, 30, 20]} intensity={3.5} color="#a78bfa" castShadow />
         <BakeShadows />
         

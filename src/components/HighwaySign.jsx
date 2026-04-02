@@ -1,7 +1,18 @@
 import { Text } from '@react-three/drei'
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
+import { useFrame } from '@react-three/fiber'
 
 export const HighwaySign = React.memo(({ position, title, subtext, color = "#3b82f6" }) => {
+  const glowRef = useRef()
+  
+  // Subtle Neon Flicker (UI-PLSH-01)
+  useFrame(() => {
+    if (glowRef.current) {
+      const flicker = Math.random() > 0.99 ? (0.5 + Math.random() * 0.5) : 1.0;
+      glowRef.current.emissiveIntensity = 2 * flicker;
+    }
+  })
+
   // Explicit cleanup on unmount
   useEffect(() => {
     return () => {
@@ -35,7 +46,7 @@ export const HighwaySign = React.memo(({ position, title, subtext, color = "#3b8
       {/* Neon Frame */}
       <mesh position={[0, 6.5, 0.11]}>
         <boxGeometry args={[10.2, 2.5, 0.05]} />
-        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={2} wireframe />
+        <meshStandardMaterial ref={glowRef} color={color} emissive={color} emissiveIntensity={2} wireframe />
       </mesh>
 
       <Text position={[0, 7.1, 0.2]} fontSize={0.7} color="white" anchorX="center" anchorY="middle">

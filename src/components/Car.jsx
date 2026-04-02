@@ -45,9 +45,9 @@ export function Car({ trackLength = 400, ...props }) {
       {/* --- Mahindra Thar Setup --- */}
 
       {/* Main Lower Body */}
-      <mesh position={[0, 0.8, 0]}>
+      <mesh position={[0, 0.8, 0]} castShadow>
         <boxGeometry args={[1.6, 0.6, 3.4]} />
-        <meshStandardMaterial color={bodyColor} roughness={0.3} metalness={0.7} />
+        <meshStandardMaterial color={bodyColor} roughness={0.1} metalness={0.9} envMapIntensity={1.0} />
       </mesh>
       
       {/* Front Bumper */}
@@ -63,9 +63,9 @@ export function Car({ trackLength = 400, ...props }) {
       </mesh>
       
       {/* Cabin / Roof */}
-      <mesh position={[0, 1.45, -0.3]}>
+      <mesh position={[0, 1.45, -0.3]} castShadow>
         <boxGeometry args={[1.5, 0.7, 2.0]} />
-        <meshStandardMaterial color={bodyColor} roughness={0.3} metalness={0.7} />
+        <meshStandardMaterial color={bodyColor} roughness={0.1} metalness={0.9} envMapIntensity={1.0} />
       </mesh>
 
       {/* Windshield */}

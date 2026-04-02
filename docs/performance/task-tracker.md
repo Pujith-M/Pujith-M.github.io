@@ -30,8 +30,8 @@ Use this file if you want **Git-native tracking** (no external tools). Update st
 | PERF-16 | React Re-render Minimization | P1 | DONE |  |  |
 | PERF-17 | Motion/Camera Smoothing | P1 | DONE |  |  |
 | PERF-18 | CDN + Immutable Caching | P1 | DONE |  |  |
-| PERF-19 | RUM + Telemetry Dashboard | P2 | TODO |  |  |
-| PERF-20 | Scalability Test Harness | P2 | TODO |  |  |
+| PERF-19 | RUM + Telemetry Dashboard | P2 | DONE |  |  |
+| PERF-20 | Scalability Test Harness | P2 | DONE |  |  |
 
 ## Recommended Workflow
 1. Create issue from `.github/ISSUE_TEMPLATE/performance-task.md`.
