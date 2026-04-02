@@ -1,6 +1,7 @@
 import { Html, Text } from '@react-three/drei'
 import { HighwaySign } from './HighwaySign'
 import { LAYOUT } from '../config/layout'
+import { useLanes } from '../hooks/useLanes'
 
 function ProjectScreen({ position, name, tech, desc, rotationY }) {
   return (
@@ -49,8 +50,9 @@ function ProjectScreen({ position, name, tech, desc, rotationY }) {
   )
 }
 
-export function ProjectsTrack({ startZ }) {
-  const projects = [
+export function ProjectsTrack({ startZ, data = [] }) {
+  const lanes = useLanes()
+  const projects = data.length > 0 ? data : [
     {
       name: "Campus.IO",
       tech: "MEAN Stack",
@@ -80,7 +82,7 @@ export function ProjectsTrack({ startZ }) {
       {projects.map((proj, i) => (
         <ProjectScreen 
           key={i}
-          position={[i % 2 === 0 ? LAYOUT.LANES.RIGHT : LAYOUT.LANES.LEFT, 0, startZ - LAYOUT.SPACING.BILLBOARD_GAP - (i * LAYOUT.SPACING.BILLBOARD_GAP)]}
+          position={[i % 2 === 0 ? lanes.RIGHT : lanes.LEFT, 0, startZ - LAYOUT.SPACING.BILLBOARD_GAP - (i * LAYOUT.SPACING.BILLBOARD_GAP)]}
           name={proj.name}
           tech={proj.tech}
           desc={proj.desc}

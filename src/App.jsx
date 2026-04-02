@@ -6,7 +6,8 @@ import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import { Perf } from 'r3f-perf'
 import { Car } from './components/Car'
 import { Hero3D } from './components/Hero3D'
-import { CityEnvironment } from './components/CityEnvironment'
+import { CityChunk } from './components/CityEnvironment'
+import { TIMELINE } from './config/timeline' 
 
 // Total physical drive distance
 const TRACK_LENGTH = 600
@@ -24,19 +25,23 @@ const VISIBILITY_THRESHOLD = 150
 function TrackManager({ scrollOffset }) {
   const currentZ = -scrollOffset * TRACK_LENGTH
   
+  const experienceData = TIMELINE.filter(t => t.type === 'EXPERIENCE')
+  const skillsData = TIMELINE.filter(t => t.type === 'SKILLS')
+  const projectsData = TIMELINE.filter(t => t.type === 'PROJECTS')
+
   return (
     <Suspense fallback={null}>
       {/* Hero is always at the start, Z = [0, -30] approx */}
       {currentZ > -100 && <Hero3D />}
 
       {/* Experience Track: Z = [-40, -370] */}
-      {currentZ < 100 && currentZ > -500 && <ExperienceTrack startZ={-40} />}
+      {currentZ < 100 && currentZ > -500 && <ExperienceTrack startZ={-40} data={experienceData} />}
 
       {/* Skills Track: Z = [-430, -465] */}
-      {currentZ < -300 && currentZ > -600 && <SkillsTrack startZ={-430} />}
+      {currentZ < -300 && currentZ > -600 && <SkillsTrack startZ={-430} data={skillsData} />}
 
       {/* Projects Track: Z = [-470, -525] */}
-      {currentZ < -350 && currentZ > -700 && <ProjectsTrack startZ={-470} />}
+      {currentZ < -350 && currentZ > -700 && <ProjectsTrack startZ={-470} data={projectsData} />}
 
       {/* Contact Track: Z = [-540, -550] */}
       {currentZ < -400 && <ContactTrack startZ={-540} />}
@@ -129,9 +134,15 @@ function App() {
           />
         </EffectComposer>
 
-        {/* The Realistic City Background */}
-        <CityEnvironment length={TRACK_LENGTH} />
-
+        {/* The Realistic City Background Rendered in Chunks for LOD/Culling */}
+        {Array.from({ length: Math.ceil(TRACK_LENGTH / 200) }).map((_, i) => {
+          const startZ = -(i * 200)
+          return (
+            <group key={`chunk-${i}`}>
+              <CityChunk startZ={startZ} length={200} seed={12345 + i} />
+            </group>
+          )
+        })}
         {/* Increase pages heavily to handle the huge 600 unit distance smoothly */}
         <ScrollControls pages={25} damping={0.15}>
           <CameraFollow />

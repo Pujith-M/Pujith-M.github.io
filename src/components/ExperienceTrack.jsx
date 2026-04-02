@@ -1,11 +1,13 @@
 import { Html, Text } from '@react-three/drei'
 import { HighwaySign } from './HighwaySign'
 import { LAYOUT } from '../config/layout'
+import { useLanes } from '../hooks/useLanes'
 
 // Removed inline HighwaySign in favor of shared component
 // Individual Ad Billboard for each bullet point
 function AdBillboard({ position, text, role, side = "left" }) {
-  const xOffset = side === "left" ? LAYOUT.LANES.OFFROAD_LEFT : LAYOUT.LANES.OFFROAD_RIGHT
+  const lanes = useLanes()
+  const xOffset = side === "left" ? lanes.OFFROAD_LEFT : lanes.OFFROAD_RIGHT
   const finalPos = [position[0] + xOffset, position[1], position[2]]
   const accentColor = side === "left" ? "#14b8a6" : "#3b82f6"
 
@@ -58,8 +60,8 @@ function AdBillboard({ position, text, role, side = "left" }) {
   )
 }
 
-export function ExperienceTrack({ startZ = -20 }) {
-  const experiences = [
+export function ExperienceTrack({ startZ = -20, data = [] }) {
+  const experiences = data.length > 0 ? data : [
     {
       company: 'Unmarshal',
       role: 'Senior Software Engineer',

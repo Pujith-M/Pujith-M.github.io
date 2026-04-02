@@ -1,12 +1,12 @@
 import React, { useRef, useMemo } from 'react'
 import { Instances, Instance } from '@react-three/drei'
 
-export const CityEnvironment = React.memo(({ length }) => {
-  // Generate random skyscrapers
+export const CityChunk = React.memo(({ startZ, length, seed = 12345 }) => {
+  // Generate deterministic buildings for this specific chunk
   const buildings = useMemo(() => {
-    let seed = 12345;
+    let s = seed;
     const random = () => {
-      const x = Math.sin(seed++) * 10000;
+      const x = Math.sin(s++) * 10000;
       return x - Math.floor(x);
     };
 
@@ -19,7 +19,7 @@ export const CityEnvironment = React.memo(({ length }) => {
       
       // Left side
       list.push({
-        position: [-22 - random() * 30, h / 2, -random() * length],
+        position: [-22 - random() * 30, h / 2, startZ - random() * length],
         scale: [w, h, d],
         color: i % 2 === 0 ? "#0f172a" : "#020617",
         windows: Array.from({ length: 6 }).map(() => ({
@@ -30,7 +30,7 @@ export const CityEnvironment = React.memo(({ length }) => {
       
       // Right side
       list.push({
-        position: [22 + random() * 30, h / 2, -random() * length],
+        position: [22 + random() * 30, h / 2, startZ - random() * length],
         scale: [w, h, d],
         color: i % 2 === 1 ? "#0f172a" : "#020617",
         windows: Array.from({ length: 6 }).map(() => ({
@@ -40,35 +40,35 @@ export const CityEnvironment = React.memo(({ length }) => {
       })
     }
     return list
-  }, [length])
+  }, [startZ, length, seed])
 
   // Generate street lamps
   const lamps = useMemo(() => {
     const list = []
     const spacing = 40
-    for (let z = 0; z > -length; z -= spacing) {
+    for (let z = startZ; z > startZ - length; z -= spacing) {
       // Left lamp
       list.push({ position: [-4, 0, z] })
       // Right lamp
       list.push({ position: [4, 0, z - (spacing/2)] }) // offset slightly
     }
     return list
-  }, [length])
+  }, [startZ, length])
 
   return (
     <group>
       {/* The Asphalt Road */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, -length/2]} receiveShadow>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, startZ - length/2]} receiveShadow>
         <planeGeometry args={[12, length + 40]} />
         <meshStandardMaterial color="#0a0a0f" roughness={0.6} metalness={0.4} />
       </mesh>
       
       {/* Side Curbs / Sidewalks */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-6.5, -0.005, -length/2]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-6.5, -0.005, startZ - length/2]}>
         <planeGeometry args={[1, length + 40]} />
         <meshStandardMaterial color="#1e293b" />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[6.5, -0.005, -length/2]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[6.5, -0.005, startZ - length/2]}>
         <planeGeometry args={[1, length + 40]} />
         <meshStandardMaterial color="#1e293b" />
       </mesh>
@@ -78,7 +78,7 @@ export const CityEnvironment = React.memo(({ length }) => {
         <planeGeometry args={[0.2, 5]} />
         <meshStandardMaterial color="#3b82f6" emissive="#3b82f6" emissiveIntensity={4} />
         {Array.from({ length: Math.floor(length / 10) }).map((_, i) => (
-          <Instance key={i} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, -(i * 10)]} />
+          <Instance key={i} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, startZ - (i * 10)]} />
         ))}
       </Instances>
 

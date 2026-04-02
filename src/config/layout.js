@@ -3,8 +3,8 @@
  * Used to unify spacing, lane placement, and billboard distancing.
  */
 export const LAYOUT = {
-  // Lane positions
-  LANES: {
+  // Base settings
+  BASE_LANES: {
     LEFT: -6.5,
     CENTER_LEFT: -3.0,
     CENTER: 0,
@@ -12,6 +12,21 @@ export const LAYOUT = {
     RIGHT: 6.5,
     OFFROAD_LEFT: -12.0,
     OFFROAD_RIGHT: 12.0,
+  },
+
+  // Function to get aspect-ratio adjusted lanes
+  getLanes: (aspect = 1.7) => {
+    // Narrow factor for mobile (portrait aspect < 1)
+    const factor = aspect < 1 ? 0.6 : 1.0;
+    return {
+      LEFT: -6.5 * factor,
+      CENTER_LEFT: -3.0 * factor,
+      CENTER: 0,
+      CENTER_RIGHT: 3.0 * factor,
+      RIGHT: 6.5 * factor,
+      OFFROAD_LEFT: -10 * factor,
+      OFFROAD_RIGHT: 10 * factor,
+    };
   },
   
   // Track spacing

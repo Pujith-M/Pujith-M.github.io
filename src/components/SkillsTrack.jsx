@@ -1,6 +1,7 @@
 import { Text, Float, Html } from '@react-three/drei'
 import { HighwaySign } from './HighwaySign'
 import { LAYOUT } from '../config/layout'
+import { useLanes } from '../hooks/useLanes'
 
 function SkillNode({ position, title, items, color }) {
   return (
@@ -56,43 +57,52 @@ function SkillNode({ position, title, items, color }) {
   )
 }
 
-export function SkillsTrack({ startZ }) {
+export function SkillsTrack({ startZ, data = [] }) {
+  const lanes = useLanes()
+  const skills = data.length > 0 ? data : [
+    {
+      title: "Core Languages",
+      items: ["Golang", "Solidity", "TypeScript", "Java"],
+      color: "#3b82f6"
+    },
+    {
+      title: "Web3 & Blockchain",
+      items: ["Web3", "Foundry", "Smart Contracts", "Postgres"],
+      color: "#8b5cf6"
+    },
+    {
+      title: "Tools & Frameworks",
+      items: ["React JS / Next JS", "Kafka", "Prometheus / Grafana"],
+      color: "#14b8a6"
+    }
+  ]
+
   return (
     <group>
       {/* Section Header */}
       <HighwaySign 
-        position={[0, 0, startZ]} 
+        position={[0, LAYOUT.BILLBOARD.SIGN_HEIGHT, startZ]} 
         title="ENTERING SKILLS" 
         subtext="TECHNICAL ARSENAL" 
         color="#14b8a6" 
       />
 
-      {/* Left Node */}
-      <SkillNode 
-        position={[LAYOUT.LANES.LEFT + 1.5, 3, startZ - LAYOUT.SPACING.BILLBOARD_GAP]} 
-        title="Core Languages" 
-        items={["Golang", "Solidity", "TypeScript", "Java"]} 
-        color="#3b82f6" 
-      />
-      
-      {/* Right Node */}
-      <SkillNode 
-        position={[LAYOUT.LANES.RIGHT - 1.5, 3, startZ - LAYOUT.SPACING.BILLBOARD_GAP - 5]} 
-        title="Web3 & Blockchain" 
-        items={["Web3", "Foundry", "Smart Contracts", "Postgres"]} 
-        color="#8b5cf6" 
-      />
-
-      {/* Left Node */}
-      <SkillNode 
-        position={[LAYOUT.LANES.LEFT + 1.5, 3, startZ - LAYOUT.SPACING.BILLBOARD_GAP - 10]} 
-        title="Tools & Frameworks" 
-        items={["React JS / Next JS", "Kafka", "Prometheus / Grafana"]} 
-        color="#14b8a6" 
-      />
+      {skills.map((skill, index) => (
+        <SkillNode 
+          key={index}
+          position={[
+            index % 2 === 0 ? lanes.LEFT + 1.5 : lanes.RIGHT - 1.5, 
+            3, 
+            startZ - LAYOUT.SPACING.BILLBOARD_GAP - (index * 5)
+          ]} 
+          title={skill.title} 
+          items={skill.items} 
+          color={skill.color} 
+        />
+      ))}
       
       <HighwaySign 
-        position={[0, LAYOUT.BILLBOARD.SIGN_HEIGHT, startZ - LAYOUT.SPACING.SECTION_BUFFER]} 
+        position={[0, LAYOUT.BILLBOARD.SIGN_HEIGHT, startZ - LAYOUT.SPACING.SECTION_BUFFER - (skills.length * 5)]} 
         title="LEAVING SKILLS" 
         subtext="END OF ZONE" 
         color="#ec4899" 
