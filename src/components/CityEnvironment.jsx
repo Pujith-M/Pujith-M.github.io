@@ -1,5 +1,5 @@
 import { useRef, useMemo } from 'react'
-
+import { Instances, Instance } from '@react-three/drei'
 export function CityEnvironment({ length }) {
   // Generate random skyscrapers
   const buildings = useMemo(() => {
@@ -73,53 +73,72 @@ export function CityEnvironment({ length }) {
       </mesh>
       
       {/* The Lane lines */}
-      {Array.from({ length: Math.floor(length / 10) }).map((_, i) => (
-        <mesh key={i} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, -(i * 10)]}>
-          <planeGeometry args={[0.2, 5]} />
-          <meshStandardMaterial color="#3b82f6" emissive="#3b82f6" emissiveIntensity={4} />
-        </mesh>
-      ))}
+      <Instances limit={200} range={Math.floor(length / 10)}>
+        <planeGeometry args={[0.2, 5]} />
+        <meshStandardMaterial color="#3b82f6" emissive="#3b82f6" emissiveIntensity={4} />
+        {Array.from({ length: Math.floor(length / 10) }).map((_, i) => (
+          <Instance key={i} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, -(i * 10)]} />
+        ))}
+      </Instances>
 
       {/* Buildings */}
-      {buildings.map((b, i) => (
-        <group key={`b-${i}`} position={b.position}>
-          <mesh>
-            <boxGeometry args={b.scale} />
-            <meshStandardMaterial color={b.color} roughness={0.2} metalness={0.9} />
-          </mesh>
-          {/* Windows on buildings */}
-          {b.windows.map((win, j) => (
-            <mesh key={`w-${j}`} position={win.pos}>
-              <planeGeometry args={win.size} />
-              <meshStandardMaterial 
-                color={i % 3 === 0 ? "#3b82f6" : "#f43f5e"} 
-                emissive={i % 3 === 0 ? "#3b82f6" : "#f43f5e"} 
-                emissiveIntensity={3} 
-              />
-            </mesh>
-          ))}
-        </group>
-      ))}
+      <Instances limit={200} range={buildings.length}>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshStandardMaterial roughness={0.2} metalness={0.9} />
+        {buildings.map((b, i) => (
+          <Instance key={`b-${i}`} position={b.position} scale={b.scale} color={b.color} />
+        ))}
+      </Instances>
 
+      {/* Blue Windows */}
+      <Instances limit={1000}>
+        <planeGeometry args={[1, 1]} />
+        <meshStandardMaterial color="#3b82f6" emissive="#3b82f6" emissiveIntensity={3} />
+        {buildings.filter((_, i) => i % 3 === 0).flatMap((b, i) => b.windows.map((win, j) => (
+          <Instance key={`bw-${i}-${j}`} position={[b.position[0] + win.pos[0], b.position[1] + win.pos[1], b.position[2] + win.pos[2]]} scale={win.size} />
+        )))}
+      </Instances>
+
+      {/* Red Windows */}
+      <Instances limit={1000}>
+        <planeGeometry args={[1, 1]} />
+        <meshStandardMaterial color="#f43f5e" emissive="#f43f5e" emissiveIntensity={3} />
+        {buildings.filter((_, i) => i % 3 !== 0).flatMap((b, i) => b.windows.map((win, j) => (
+          <Instance key={`rw-${i}-${j}`} position={[b.position[0] + win.pos[0], b.position[1] + win.pos[1], b.position[2] + win.pos[2]]} scale={win.size} />
+        )))}
+      </Instances>
       {/* Street Lamps */}
+      <Instances limit={100} range={lamps.length}>
+        <cylinderGeometry args={[0.05, 0.1, 6]} />
+        <meshStandardMaterial color="#334155" />
+        {lamps.map((lamp, i) => (
+          <Instance key={`lp-${i}`} position={[lamp.position[0], lamp.position[1] + 3, lamp.position[2]]} />
+        ))}
+      </Instances>
+
+      <Instances limit={100} range={lamps.length}>
+        <boxGeometry args={[1, 0.1, 0.2]} />
+        <meshStandardMaterial color="#1e293b" />
+        {lamps.map((lamp, i) => {
+          const isLeft = lamp.position[0] < 0
+          return <Instance key={`lh-${i}`} position={[lamp.position[0] + (isLeft ? 0.5 : -0.5), lamp.position[1] + 6, lamp.position[2]]} />
+        })}
+      </Instances>
+
+      <Instances limit={100} range={lamps.length}>
+        <sphereGeometry args={[0.2]} />
+        <meshBasicMaterial color="#fcd34d" />
+        {lamps.map((lamp, i) => {
+          const isLeft = lamp.position[0] < 0
+          return <Instance key={`lg-${i}`} position={[lamp.position[0] + (isLeft ? 1 : -1), lamp.position[1] + 5.9, lamp.position[2]]} />
+        })}
+      </Instances>
+
+      {/* Street Lamp Lights (Must remain non-instanced) */}
       {lamps.map((lamp, i) => {
         const isLeft = lamp.position[0] < 0
         return (
-          <group key={`l-${i}`} position={lamp.position}>
-            {/* Pole */}
-            <mesh position={[0, 3, 0]}>
-              <cylinderGeometry args={[0.05, 0.1, 6]} />
-              <meshStandardMaterial color="#334155" />
-            </mesh>
-            {/* Lamp Head */}
-            <mesh position={[isLeft ? 0.5 : -0.5, 6, 0]}>
-              <boxGeometry args={[1, 0.1, 0.2]} />
-              <meshStandardMaterial color="#1e293b" />
-            </mesh>
-            {/* The Light Glow */}
-            <mesh position={[isLeft ? 1 : -1, 5.9, 0]}>
-              <sphereGeometry args={[0.2]} />
-              <meshBasicMaterial color="#fcd34d" />
+          <group key={`ll-${i}`} position={[lamp.position[0] + (isLeft ? 1 : -1), lamp.position[1] + 5.9, lamp.position[2]]}>
               <pointLight color="#fcd34d" intensity={2} distance={20} decay={2} />
               <spotLight 
                 color="#fcd34d" 
@@ -129,7 +148,6 @@ export function CityEnvironment({ length }) {
                 position={[0,0,0]} 
                 target-position={[isLeft ? 2 : -2, -6, 0]} 
               />
-            </mesh>
           </group>
         )
       })}

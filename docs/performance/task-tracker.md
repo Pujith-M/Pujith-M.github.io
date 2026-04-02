@@ -14,7 +14,7 @@ Use this file if you want **Git-native tracking** (no external tools). Update st
 |---|---|---|---|---|---|
 | PERF-01 | Performance Budget + CI Guardrails | P0 | TODO |  |  |
 | PERF-02 | Render-on-Demand Loop | P0 | TODO |  |  |
-| PERF-03 | Geometry Instancing | P0 | TODO |  |  |
+| PERF-03 | Geometry Instancing | P0 | DONE |  |  |
 | PERF-04 | Track Chunking + Culling | P0 | TODO |  |  |
 | PERF-05 | Distance-Based LOD | P0 | TODO |  |  |
 | PERF-06 | Device Quality Tiering | P0 | TODO |  |  |
