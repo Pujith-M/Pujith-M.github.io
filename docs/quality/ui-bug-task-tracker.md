@@ -26,10 +26,10 @@ Git-native board for cleaning layout, removing unwanted elements, and fixing pla
 | UIBUG-12 | Occlusion rules for foreground props | P1 | TODO |  |  |
 | UIBUG-13 | Transition timing normalization | P1 | TODO |  |  |
 | UIBUG-14 | Remove legacy/dead components | P1 | DONE |  |  |
-| UIBUG-15 | QA debug overlay for layout | P1 | TODO |  |  |
+| UIBUG-15 | QA debug overlay for layout | P1 | DONE |  |  |
 | UIBUG-16 | Content density cap per segment | P1 | TODO |  |  |
 | UIBUG-17 | Entry/exit marker consistency | P1 | DONE |  |  |
-| UIBUG-18 | Visual design tokens for 3D UI | P1 | TODO |  |  |
+| UIBUG-18 | Visual design tokens for 3D UI | P1 | DONE |  |  |
 | UIBUG-19 | Regression screenshot suite | P2 | TODO |  |  |
 | UIBUG-20 | UX signoff checklist/release gate | P2 | TODO |  |  |
 

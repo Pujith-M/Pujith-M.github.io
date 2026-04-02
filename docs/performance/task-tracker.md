@@ -17,9 +17,9 @@ Use this file if you want **Git-native tracking** (no external tools). Update st
 | PERF-03 | Geometry Instancing | P0 | DONE |  |  |
 | PERF-04 | Track Chunking + Culling | P0 | TODO |  |  |
 | PERF-05 | Distance-Based LOD | P0 | TODO |  |  |
-| PERF-06 | Device Quality Tiering | P0 | TODO |  |  |
+| PERF-06 | Device Quality Tiering | P0 | DONE |  |  |
 | PERF-07 | Dynamic DPR Controller | P0 | DONE |  |  |
-| PERF-08 | Baked/Hybrid Lighting | P0 | TODO |  |  |
+| PERF-08 | Baked/Hybrid Lighting | P0 | DONE |  |  |
 | PERF-09 | Post-Processing Optimization | P0 | DONE |  |  |
 | PERF-10 | Texture Compression Strategy | P0 | TODO |  |  |
 | PERF-11 | GLTF/Asset Pipeline Optimization | P0 | TODO |  |  |

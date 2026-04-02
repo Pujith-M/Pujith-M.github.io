@@ -1,16 +1,16 @@
-import { useEffect } from 'react'
+import { Suspense, lazy, useEffect } from 'react'
+import * as THREE from 'three'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { ScrollControls, useScroll, Float } from '@react-three/drei'
+import { ScrollControls, useScroll, Float, BakeShadows } from '@react-three/drei'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
+import { Perf } from 'r3f-perf'
 import { Car } from './components/Car'
 import { Hero3D } from './components/Hero3D'
-import { Suspense, lazy } from 'react'
-import * as THREE from 'three'
-
 import { CityEnvironment } from './components/CityEnvironment'
 
 // Total physical drive distance
 const TRACK_LENGTH = 600
+const isDebugMode = window.location.search.includes('debug=true')
 
 // Lazy loaded heavy track components
 const ExperienceTrack = lazy(() => import('./components/ExperienceTrack').then(module => ({ default: module.ExperienceTrack })))
@@ -80,14 +80,16 @@ function App() {
         shadows 
         dpr={[1, 2]}
         camera={{ position: [0, 4, 10], fov: 60, near: 0.5, far: 800 }}
-        gl={{ antialias: false, stencil: false }}
+        gl={{ antialias: false, stencil: false, powerPreference: 'high-performance' }}
       >
+        {isDebugMode && <Perf position="top-left" />}
         {/* Atmosphere & Lighting */}
         <color attach="background" args={['#030014']} />
         <fog attach="fog" args={['#030014', 15, 60]} />
         
         <ambientLight intensity={2} />
         <directionalLight position={[10, 30, 20]} intensity={3.5} color="#a78bfa" castShadow />
+        <BakeShadows />
         
         {/* Post Processing for Neon Glow */}
         <EffectComposer disableNormalPass multisampling={0}>
