@@ -1,7 +1,7 @@
-import { Suspense, lazy, useEffect, useMemo } from 'react'
+import { Suspense, lazy, useEffect, useMemo, useState } from 'react'
 import * as THREE from 'three'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { ScrollControls, useScroll, Float, BakeShadows, Environment } from '@react-three/drei'
+import { ScrollControls, useScroll, Html, BakeShadows, Environment } from '@react-three/drei'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import { Perf } from 'r3f-perf'
 import { Car } from './components/Car'
@@ -20,8 +20,31 @@ const SkillsTrack = lazy(() => import('./components/SkillsTrack').then(module =>
 const ProjectsTrack = lazy(() => import('./components/ProjectsTrack').then(module => ({ default: module.ProjectsTrack })))
 const ContactTrack = lazy(() => import('./components/ContactTrack').then(module => ({ default: module.ContactTrack })))
 
-// Visibility constant: how many units ahead/behind to keep tracks mounted
-const VISIBILITY_THRESHOLD = 150
+const TRACK_STARTS = {
+  EXPERIENCE: -40,
+  SKILLS: -560,
+  PROJECTS: -710,
+  CONTACT: -880
+}
+
+function SceneLoader() {
+  return (
+    <Html center>
+      <div style={{
+        padding: '0.9rem 1.2rem',
+        border: '1px solid rgba(59,130,246,0.6)',
+        borderRadius: '12px',
+        background: 'rgba(2,6,23,0.75)',
+        color: '#e2e8f0',
+        letterSpacing: '0.08em',
+        textTransform: 'uppercase',
+        fontSize: '0.8rem'
+      }}>
+        Loading journey...
+      </div>
+    </Html>
+  )
+}
 
 function TrackManager({ scrollOffset }) {
   const currentZ = -scrollOffset * TRACK_LENGTH
@@ -32,23 +55,43 @@ function TrackManager({ scrollOffset }) {
   const projectsData = useMemo(() => TIMELINE.filter(t => t.type === 'PROJECTS'), [])
 
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<SceneLoader />}>
       {/* Hero is always at the start, Z = [0, -30] approx */}
       {currentZ > -150 && <Hero3D />}
 
       {/* Experience Track: Z = [-40, -370] */}
-      {currentZ < 150 && currentZ > -550 && <ExperienceTrack startZ={-40} data={experienceData} />}
+      {currentZ < 150 && currentZ > -650 && <ExperienceTrack startZ={TRACK_STARTS.EXPERIENCE} data={experienceData} />}
 
-      {/* Skills Track: Z = [-430, -465] */}
-      {currentZ < -250 && currentZ > -650 && <SkillsTrack startZ={-430} data={skillsData} />}
+      {/* Skills Track: starts after experience */}
+      {currentZ < -320 && currentZ > -850 && <SkillsTrack startZ={TRACK_STARTS.SKILLS} data={skillsData} />}
 
-      {/* Projects Track: Z = [-470, -525] */}
-      {currentZ < -350 && currentZ > -750 && <ProjectsTrack startZ={-470} data={projectsData} />}
+      {/* Projects Track: starts after skills */}
+      {currentZ < -470 && currentZ > -980 && <ProjectsTrack startZ={TRACK_STARTS.PROJECTS} data={projectsData} />}
 
-      {/* Contact Track: Z = [-540, -550] */}
-      {currentZ < -450 && <ContactTrack startZ={-540} />}
+      {/* Contact Track: end sequence */}
+      {currentZ < -650 && <ContactTrack startZ={TRACK_STARTS.CONTACT} />}
     </Suspense>
   )
+}
+
+function KeyboardDrive() {
+  const scroll = useScroll()
+
+  useEffect(() => {
+    const step = 180
+    const handleKeyDown = (e) => {
+      if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return
+      e.preventDefault()
+      const direction = e.key === 'ArrowDown' ? 1 : -1
+      const target = scroll.el ?? scroll.fixed?.parentElement
+      target?.scrollBy({ top: direction * step, behavior: 'smooth' })
+    }
+
+    window.addEventListener('keydown', handleKeyDown, { passive: false })
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [scroll])
+
+  return null
 }
 
 // A wrapper component to make the camera follow the car
@@ -62,21 +105,23 @@ function CameraFollow() {
     const currentScroll = scroll.offset
     const targetZ = -currentScroll * TRACK_LENGTH
     
-    // GTA Vice City style POV: close behind and slightly above the car
-    targetVec.set(0, 2.5, targetZ + 5)
+    // Elevated and pulled-back POV for better road & sign visibility
+    targetVec.set(0, 3.6, targetZ + 7.2)
     
     // Framerate-independent smoothing
     const lerpFactor = 1 - Math.exp(-5 * delta)
     state.camera.position.lerp(targetVec, lerpFactor)
     
     // Look ahead of the car, explicitly elevated to ensure tall highway signs stay safely in-frame bounds
-    state.camera.lookAt(0, 3.5, targetZ - 20)
+    state.camera.lookAt(0, 4.4, targetZ - 22)
   })
   
   return <TrackManager scrollOffset={scroll.offset} />
 }
 
 function App() {
+  const [showIntroLoader, setShowIntroLoader] = useState(true)
+
   // 1. Validate Timeline in a Web Worker (PERF-13)
   useEffect(() => {
     const worker = new Worker(new URL('./workers/validator.worker.js', import.meta.url), { type: 'module' });
@@ -90,21 +135,37 @@ function App() {
     };
   }, [])
 
-  // 2. Handle Keyboard Navigation (Arrows Up/Down)
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'ArrowUp') {
-        window.scrollBy({ top: -100, behavior: 'smooth' })
-      } else if (e.key === 'ArrowDown') {
-        window.scrollBy({ top: 100, behavior: 'smooth' })
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    const timer = window.setTimeout(() => setShowIntroLoader(false), 1400)
+    return () => window.clearTimeout(timer)
   }, [])
 
   return (
     <div style={{ width: '100vw', height: '100vh', background: '#030014', overflow: 'hidden' }}>
+      {showIntroLoader && (
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 20,
+          background: 'radial-gradient(circle at 50% 40%, rgba(30,41,59,0.45), rgba(3,0,20,0.95))',
+          display: 'grid',
+          placeItems: 'center',
+          pointerEvents: 'none'
+        }}>
+          <div style={{
+            padding: '1rem 1.4rem',
+            borderRadius: '14px',
+            border: '1px solid rgba(59,130,246,0.5)',
+            background: 'rgba(2,6,23,0.75)',
+            color: '#e2e8f0',
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            fontSize: '0.78rem'
+          }}>
+            Starting engine...
+          </div>
+        </div>
+      )}
       
       {/* HTML Overlay Intros */}
       <div style={{
@@ -126,7 +187,7 @@ function App() {
         shadows 
         frameloop="demand"
         dpr={[1, 2]}
-        camera={{ position: [0, 4, 10], fov: 60, near: 0.5, far: 800 }}
+        camera={{ position: [0, 5, 13], fov: 58, near: 0.5, far: 800 }}
         gl={{ antialias: false, stencil: false, powerPreference: 'high-performance' }}
       >
         {isDebugMode && <Perf position="top-left" />}
@@ -161,6 +222,7 @@ function App() {
         })}
         {/* Increase pages to 50 to handle the full 1200 unit journey smoothly */}
         <ScrollControls pages={50} damping={0.15}>
+          <KeyboardDrive />
           <CameraFollow />
           
           <group position={[0,0,0]}>
