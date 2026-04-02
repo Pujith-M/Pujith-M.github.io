@@ -1,0 +1,7 @@
+{
+  "max_js_bundle_size_kb": 1500,
+  "max_css_bundle_size_kb": 50,
+  "min_lighthouse_performance_score": 90,
+  "target_mobile_fps": 30,
+  "target_desktop_fps": 60
+}
