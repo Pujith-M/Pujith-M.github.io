@@ -8,7 +8,7 @@ import { Car } from './components/Car'
 import { Hero3D } from './components/Hero3D'
 import { CityChunk } from './components/CityEnvironment'
 import { TIMELINE } from './config/timeline' 
-import { validateTimeline } from './config/validator'
+// validateTimeline is now called in the worker
 
 // Total physical drive distance - Increased to 1200 based on validation audit
 const TRACK_LENGTH = 1200
@@ -77,12 +77,17 @@ function CameraFollow() {
 }
 
 function App() {
-  // 1. Validate Timeline on Startup
+  // 1. Validate Timeline in a Web Worker (PERF-13)
   useEffect(() => {
-    const warnings = validateTimeline(TIMELINE)
-    if (warnings.length > 0) {
-      console.warn("Timeline Validation Warnings:", warnings)
-    }
+    const worker = new Worker(new URL('./workers/validator.worker.js', import.meta.url), { type: 'module' });
+    worker.postMessage({ timeline: TIMELINE });
+    worker.onmessage = (e) => {
+      const { warnings } = e.data;
+      if (warnings && warnings.length > 0) {
+        console.warn("Timeline Validation Warnings (Off-thread):", warnings);
+      }
+      worker.terminate();
+    };
   }, [])
 
   // 2. Handle Keyboard Navigation (Arrows Up/Down)

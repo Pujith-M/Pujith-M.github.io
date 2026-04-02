@@ -21,15 +21,15 @@ Use this file if you want **Git-native tracking** (no external tools). Update st
 | PERF-07 | Dynamic DPR Controller | P0 | DONE |  |  |
 | PERF-08 | Baked/Hybrid Lighting | P0 | DONE |  |  |
 | PERF-09 | Post-Processing Optimization | P0 | DONE |  |  |
-| PERF-10 | Texture Compression Strategy | P0 | TODO |  |  |
-| PERF-11 | GLTF/Asset Pipeline Optimization | P0 | TODO |  |  |
+| PERF-10 | Texture Compression Strategy | P0 | DONE |  |  |
+| PERF-11 | GLTF/Asset Pipeline Optimization | P0 | DONE |  |  |
 | PERF-12 | Section Lazy Loading | P1 | DONE |  |  |
-| PERF-13 | Worker Offloading | P1 | TODO |  |  |
+| PERF-13 | Worker Offloading | P1 | DONE |  |  |
 | PERF-14 | Content Streaming State Machine | P1 | DONE |  |  |
 | PERF-15 | Memory Leak Detection + Cleanup | P1 | DONE |  |  |
 | PERF-16 | React Re-render Minimization | P1 | DONE |  |  |
 | PERF-17 | Motion/Camera Smoothing | P1 | DONE |  |  |
-| PERF-18 | CDN + Immutable Caching | P1 | TODO |  |  |
+| PERF-18 | CDN + Immutable Caching | P1 | DONE |  |  |
 | PERF-19 | RUM + Telemetry Dashboard | P2 | TODO |  |  |
 | PERF-20 | Scalability Test Harness | P2 | TODO |  |  |
 
