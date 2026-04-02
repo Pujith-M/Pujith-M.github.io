@@ -1,36 +1,40 @@
 import { Html, Text } from '@react-three/drei'
 
 // Giant Overhead Highway Sign for Start/End of a Zone
-function HighwaySign({ position, title, subtext, color = "#3b82f6" }) {
+function HighwaySign({ position, title, subtext, color = "var(--accent-blue)" }) {
   return (
     <group position={position}>
-      {/* Pillars */}
-      <mesh position={[-6, 4, 0]}>
-        <cylinderGeometry args={[0.2, 0.2, 8]} />
-        <meshStandardMaterial color="#1e293b" />
+      {/* Pillars with metallic finish */}
+      <mesh position={[-6.2, 4, 0]}>
+        <cylinderGeometry args={[0.15, 0.2, 8]} />
+        <meshStandardMaterial color="#334155" metalness={0.8} roughness={0.2} />
       </mesh>
-      <mesh position={[6, 4, 0]}>
-        <cylinderGeometry args={[0.2, 0.2, 8]} />
-        <meshStandardMaterial color="#1e293b" />
+      <mesh position={[6.2, 4, 0]}>
+        <cylinderGeometry args={[0.15, 0.2, 8]} />
+        <meshStandardMaterial color="#334155" metalness={0.8} roughness={0.2} />
       </mesh>
 
       {/* Crossbeam */}
       <mesh position={[0, 8, 0]}>
-        <boxGeometry args={[12.4, 0.4, 0.4]} />
-        <meshStandardMaterial color="#1e293b" />
+        <boxGeometry args={[12.8, 0.3, 0.3]} />
+        <meshStandardMaterial color="#334155" metalness={0.8} roughness={0.2} />
       </mesh>
 
-      {/* Sign Board */}
-      <mesh position={[0, 6.5, 0.1]}>
-        <boxGeometry args={[10, 2.5, 0.2]} />
-        <meshStandardMaterial color="#0f172a" />
+      {/* Sign Board with Neon Glow */}
+      <mesh position={[0, 6.5, 0]}>
+        <boxGeometry args={[10.5, 2.8, 0.2]} />
+        <meshStandardMaterial color="#020617" />
+      </mesh>
+      {/* Neon Frame */}
+      <mesh position={[0, 6.5, 0.11]}>
+        <boxGeometry args={[10.2, 2.5, 0.05]} />
+        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={2} wireframe />
       </mesh>
 
-      {/* Illuminated Text */}
-      <Text position={[0, 7, 0.25]} fontSize={0.8} color={color} anchorX="center" anchorY="middle">
+      <Text position={[0, 7.1, 0.2]} fontSize={0.7} color="white" anchorX="center" anchorY="middle">
         {title}
       </Text>
-      <Text position={[0, 6, 0.25]} fontSize={0.4} color="#94a3b8" anchorX="center" anchorY="middle">
+      <Text position={[0, 6.1, 0.2]} fontSize={0.35} color="#94a3b8" anchorX="center" anchorY="middle">
         {subtext}
       </Text>
     </group>
@@ -39,44 +43,54 @@ function HighwaySign({ position, title, subtext, color = "#3b82f6" }) {
 
 // Individual Ad Billboard for each bullet point
 function AdBillboard({ position, text, role, side = "left" }) {
-  const xOffset = side === "left" ? -8 : 8
+  const xOffset = side === "left" ? -8.5 : 8.5
   const finalPos = [position[0] + xOffset, position[1], position[2]]
+  const accentColor = side === "left" ? "#14b8a6" : "#3b82f6"
 
+  // Since text gets too long, we will use text wrapping.
+  // We'll give it a max width.
   return (
-    <group position={finalPos} rotation={[0, side === "left" ? 0.4 : -0.4, 0]}>
-      {/* 3D Title */}
+    <group position={finalPos} rotation={[0, side === "left" ? 0.3 : -0.3, 0]}>
+      {/* Title Label */}
       <Text 
-        position={[0, 2.8, 0]} 
-        fontSize={0.5} 
-        color="#3b82f6" 
+        position={[0, 3.2, 0.1]} 
+        fontSize={0.4} 
+        color={accentColor}
         anchorX="center" 
-        anchorY="middle"
       >
-        {role}
+        {role.toUpperCase()}
       </Text>
       
-      {/* HTML Overlay Panel (The actual Ad poster) */}
-      <Html transform position={[0, 1, 0]} distanceFactor={12}>
-        <div style={{
-          width: '360px',
-          background: 'var(--glass-bg)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          border: `2px solid ${side === "left" ? "var(--accent-teal)" : "var(--accent-blue)"}`,
-          borderRadius: '12px',
-          padding: '24px',
-          color: 'white',
-          boxShadow: `0 8px 32px rgba(${side === "left" ? "20, 184, 166" : "59, 130, 246"}, 0.3)`,
-          fontFamily: 'Inter, sans-serif'
-        }}>
-          <p style={{ margin: 0, fontSize: '1.2rem', lineHeight: '1.6' }}>{text}</p>
-        </div>
-      </Html>
+      {/* Premium Glass Billboard Backing in 3D */}
+      <group position={[0, 1.2, 0]}>
+        {/* Glass panel */}
+        <mesh position={[0, 0, -0.1]}>
+          <planeGeometry args={[6, 3]} />
+          <meshStandardMaterial color="#0f172a" transparent opacity={0.8} roughness={0.2} />
+        </mesh>
+        {/* Neon border */}
+        <mesh position={[0, 0, -0.05]}>
+          <planeGeometry args={[6.2, 3.2]} />
+          <meshBasicMaterial color={accentColor} wireframe />
+        </mesh>
+
+        <Text 
+          position={[0, 0, 0]} 
+          fontSize={0.25} 
+          color="white" 
+          anchorX="center" 
+          anchorY="middle"
+          maxWidth={5.5}
+          textAlign="center"
+        >
+          {text}
+        </Text>
+      </group>
       
-      {/* Billboard Pillar */}
-      <mesh position={[0, -1.5, 0]}>
-        <cylinderGeometry args={[0.2, 0.3, 3]} />
-        <meshStandardMaterial color="#334155" />
+      {/* Pillar */}
+      <mesh position={[0, -2, -0.1]}>
+        <cylinderGeometry args={[0.1, 0.15, 4]} />
+        <meshStandardMaterial color="#1e293b" metalness={1} roughness={0.1} />
       </mesh>
     </group>
   )
@@ -125,10 +139,10 @@ export function ExperienceTrack({ startZ = -20 }) {
         position={[0, 0, currentZ]} 
         title={`ENTERING ${exp.company.toUpperCase()}`} 
         subtext={exp.role} 
-        color="#10b981"
+        color="var(--accent-teal)"
       />
     )
-    currentZ -= 20 // Drive forward 20 units
+    currentZ -= 25 // Greater spacing for premium feel
 
     // 2. Spread bullet points as individual alternating billboards
     exp.points.forEach((pt, ptIndex) => {
@@ -137,14 +151,14 @@ export function ExperienceTrack({ startZ = -20 }) {
           key={`ad-${index}-${ptIndex}`}
           position={[0, 0, currentZ]}
           text={pt}
-          role={exp.role}
+          role={`${exp.company} - ${exp.role}`}
           side={ptIndex % 2 === 0 ? "left" : "right"}
         />
       )
-      currentZ -= 15 // Distance between each consecutive billboard
+      currentZ -= 18 // More distance for easier reading
     })
 
-    currentZ -= 10 // Padding before exit sign
+    currentZ -= 15
 
     // 3. Leaving Sign
     componentsToRender.push(
@@ -152,11 +166,11 @@ export function ExperienceTrack({ startZ = -20 }) {
         key={`exit-${index}`} 
         position={[0, 0, currentZ]} 
         title={`LEAVING ${exp.company.toUpperCase()}`} 
-        subtext="END OF EXPERIENCE" 
-        color="#f43f5e"
+        subtext="END OF EXPERIENCE ZONE" 
+        color="var(--accent-pink)"
       />
     )
-    currentZ -= 30 // Gap before the next company
+    currentZ -= 40
   })
 
   // Expose the final Z so other tracks know where to start? 

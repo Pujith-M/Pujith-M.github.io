@@ -1,33 +1,53 @@
-import { Text, Float } from '@react-three/drei'
+import { Text, Float, Html } from '@react-three/drei'
 
 function SkillNode({ position, title, items, color }) {
   return (
     <group position={position}>
-      {/* Floating Geometric Core */}
-      <Float speed={2} rotationIntensity={1.5} floatIntensity={1.5}>
+      {/* Floating Geometric Core with Glow */}
+      <Float speed={3} rotationIntensity={2} floatIntensity={1}>
         <mesh position={[0, 0, 0]}>
-          <icosahedronGeometry args={[1, 0]} />
-          <meshStandardMaterial color={color} wireframe />
+          <octahedronGeometry args={[1.2]} />
+          <meshStandardMaterial 
+            color={color} 
+            emissive={color} 
+            emissiveIntensity={4} 
+            wireframe 
+            transparent 
+            opacity={0.8} 
+          />
         </mesh>
       </Float>
 
-      {/* Category Title */}
-      <Text position={[0, 2, 0]} fontSize={0.6} color="white" anchorX="center" anchorY="bottom">
-        {title}
-      </Text>
-
-      {/* Skills listed below it */}
-      {items.map((item, idx) => (
-        <Text 
-          key={idx} 
-          position={[0, -1.2 - (idx * 0.4), 0]} 
-          fontSize={0.4} 
-          color="#94a3b8"
-          anchorX="center" 
-        >
-          {item}
+      {/* Category Label */}
+      <group position={[0, 2.5, 0]}>
+        {/* Simple background box */}
+        <mesh position={[0, 0, -0.05]}>
+          <planeGeometry args={[3, 0.8]} />
+          <meshStandardMaterial color="#0f172a" transparent opacity={0.8} />
+        </mesh>
+        {/* Bottom border line */}
+        <mesh position={[0, -0.4, 0]}>
+          <boxGeometry args={[3, 0.05, 0.05]} />
+          <meshStandardMaterial color={color} />
+        </mesh>
+        <Text position={[0, 0, 0]} fontSize={0.4} color="white" anchorX="center" anchorY="middle">
+          {title}
         </Text>
-      ))}
+      </group>
+
+      {/* Skills list as floating tags */}
+      <group position={[0, -1, 0]}>
+        {items.map((item, idx) => (
+          <Text 
+            key={idx} 
+            position={[0, -(idx * 0.5), 0]} 
+            color="#f8fafc"
+            anchorX="center" 
+          >
+            {item}
+          </Text>
+        ))}
+      </group>
     </group>
   )
 }

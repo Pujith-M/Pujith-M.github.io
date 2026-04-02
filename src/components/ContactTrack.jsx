@@ -4,51 +4,82 @@ import { FaEnvelope, FaPhone, FaLink } from 'react-icons/fa'
 export function ContactTrack({ startZ }) {
   return (
     <group position={[0, 0, startZ]}>
-      {/* End of Road Sign */}
-      <Text position={[0, 4, 0]} fontSize={2} color="#f43f5e" anchorX="center" anchorY="bottom">
-        END OF THE ROAD
-      </Text>
+      {/* End of Road Sign - Neon Style */}
+      <HighwaySign 
+        position={[0, 0, 0]} 
+        title="JOURNEY COMPLETE" 
+        subtext="THE ROAD ENDS HERE" 
+        color="var(--accent-pink)" 
+      />
 
-      <Html transform position={[0, 1.5, 2]} distanceFactor={10}>
-        <div style={{
-          width: '600px',
-          background: 'var(--glass-bg)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          border: '1px solid var(--glass-border)',
-          borderRadius: '20px',
-          padding: '40px',
-          textAlign: 'center',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
-          color: 'var(--text-main)',
-          fontFamily: 'Inter, sans-serif'
-        }}>
-          <h2 style={{ fontSize: '2.5rem', margin: '0 0 1rem 0' }}>SJB Institute of Technology</h2>
-          <p style={{ fontSize: '1.2rem', color: 'var(--text-muted)' }}>Computer Science Engineering | 2014-2018</p>
-          
-          <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.1)', margin: '2rem 0' }} />
-          
-          <h3 style={{ fontSize: '1.8rem', color: 'var(--accent-teal)' }}>Let's Connect</h3>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', marginTop: '1.5rem' }}>
-            <a href="mailto:pujithcareerventure@gmail.com" style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.2rem', color: 'var(--text-main)', textDecoration: 'none' }}>
-              <FaEnvelope color="var(--accent-teal)" /> pujithcareerventure@gmail.com
-            </a>
-            <a href="tel:+919741283118" style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.2rem', color: 'var(--text-main)', textDecoration: 'none' }}>
-              <FaPhone color="var(--accent-blue)" /> +91 9741283118
-            </a>
-            <a href="https://unmarshal.io/" target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '1.2rem', color: 'var(--text-main)', textDecoration: 'none' }}>
-              <FaLink color="var(--accent-purple)" /> Current Project: Unmarshal
-            </a>
-          </div>
-        </div>
-      </Html>
+      {/* 3D Contact Billboard */}
+      <group position={[0, 1.5, 4]}>
+        <mesh position={[0, 0, -0.05]}>
+          <planeGeometry args={[8, 5]} />
+          <meshStandardMaterial color="#0f172a" transparent opacity={0.8} />
+        </mesh>
+        <mesh position={[0, 0, -0.02]}>
+          <planeGeometry args={[8.2, 5.2]} />
+          <meshBasicMaterial color="#14b8a6" wireframe />
+        </mesh>
+        
+        <Text position={[0, 1.5, 0]} fontSize={1} color="white" anchorX="center" anchorY="middle">
+          Let's Connect
+        </Text>
+        <Text position={[0, 0.5, 0]} fontSize={0.35} color="#94a3b8" anchorX="center" anchorY="middle" maxWidth={7} textAlign="center">
+          Open for opportunities in Web3, Backend, and Blockchain.
+        </Text>
+
+        <Text position={[0, -0.5, 0]} fontSize={0.4} color="#14b8a6" anchorX="center" anchorY="middle">
+          pujithcareerventure@gmail.com
+        </Text>
+        <Text position={[0, -1, 0]} fontSize={0.4} color="#3b82f6" anchorX="center" anchorY="middle">
+          +91 9741283118
+        </Text>
+
+        <mesh position={[0, -2, 0]}>
+          <planeGeometry args={[7, 1]} />
+          <meshBasicMaterial color="#ffffff" transparent opacity={0.03} />
+        </mesh>
+        <Text position={[0, -1.8, 0.01]} fontSize={0.3} color="#94a3b8" anchorX="center" anchorY="middle">
+          SJB Institute of Technology
+        </Text>
+        <Text position={[0, -2.15, 0.01]} fontSize={0.25} color="white" anchorX="center" anchorY="middle">
+          Computer Science Engineering | 2014-2018
+        </Text>
+      </group>
       
-      {/* Wall block / portal at the end */}
-      <mesh position={[0, 5, -2]}>
-        <planeGeometry args={[20, 10]} />
-        <meshStandardMaterial color="#000000" transparent opacity={0.8} />
+      {/* Visual Terminal Portal */}
+      <mesh position={[0, 5, -5]}>
+        <planeGeometry args={[40, 20]} />
+        <meshStandardMaterial color="#000000" transparent opacity={0.9} />
       </mesh>
+      {/* Glowing Exit Gate */}
+      <mesh position={[0, 5, -4.9]} rotation={[0, 0, 0]}>
+         <planeGeometry args={[15, 10]} />
+         <meshStandardMaterial color="var(--accent-teal)" emissive="var(--accent-teal)" emissiveIntensity={5} wireframe />
+      </mesh>
+    </group>
+  )
+}
+
+function HighwaySign({ position, title, subtext, color = "var(--accent-blue)" }) {
+  return (
+    <group position={position}>
+      <mesh position={[0, 6.5, 0]}>
+        <boxGeometry args={[12, 3, 0.2]} />
+        <meshStandardMaterial color="#020617" />
+      </mesh>
+      <mesh position={[0, 6.5, 0.11]}>
+        <boxGeometry args={[11.5, 2.5, 0.05]} />
+        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={2} wireframe />
+      </mesh>
+      <Text position={[0, 7.1, 0.2]} fontSize={0.8} color="white" anchorX="center" anchorY="middle">
+        {title}
+      </Text>
+      <Text position={[0, 6.1, 0.2]} fontSize={0.4} color="#94a3b8" anchorX="center" anchorY="middle">
+        {subtext}
+      </Text>
     </group>
   )
 }

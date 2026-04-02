@@ -33,7 +33,7 @@ export function Car({ trackLength = 400, ...props }) {
   const rimColor = "#888888" // Brighter rim for pop
 
   return (
-    <group ref={groupRef} scale={[1.4, 1.4, 1.4]} {...props}>
+    <group ref={groupRef} scale={[1.4, 1.4, 1.4]} rotation={[0, Math.PI, 0]} {...props}>
       {/* --- Mahindra Thar Setup --- */}
 
       {/* Main Lower Body */}

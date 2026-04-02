@@ -4,17 +4,32 @@ export function CityEnvironment({ length }) {
   // Generate random skyscrapers
   const buildings = useMemo(() => {
     const list = []
-    // Place buildings on both sides of the highway across the entire length
-    for (let i = 0; i < 40; i++) {
+    const buildingVariations = 5
+    for (let i = 0; i < 50; i++) {
+      const h = 10 + Math.random() * 50
+      const w = 4 + Math.random() * 6
+      const d = 4 + Math.random() * 6
+      
       // Left side
       list.push({
-        position: [-20 - Math.random() * 20, 0, -Math.random() * length],
-        scale: [3 + Math.random() * 5, 10 + Math.random() * 40, 3 + Math.random() * 5],
+        position: [-22 - Math.random() * 30, h / 2, -Math.random() * length],
+        scale: [w, h, d],
+        color: i % 2 === 0 ? "#0f172a" : "#020617",
+        windows: Array.from({ length: 6 }).map(() => ({
+          pos: [ (Math.random() - 0.5) * w, (Math.random() - 0.5) * h, d / 2 + 0.05 ],
+          size: [ 0.3 + Math.random() * 0.5, 0.4 + Math.random() * 0.8 ]
+        }))
       })
+      
       // Right side
       list.push({
-        position: [20 + Math.random() * 20, 0, -Math.random() * length],
-        scale: [3 + Math.random() * 5, 10 + Math.random() * 40, 3 + Math.random() * 5],
+        position: [22 + Math.random() * 30, h / 2, -Math.random() * length],
+        scale: [w, h, d],
+        color: i % 2 === 1 ? "#0f172a" : "#020617",
+        windows: Array.from({ length: 6 }).map(() => ({
+          pos: [ (Math.random() - 0.5) * w, (Math.random() - 0.5) * h, -d / 2 - 0.05 ],
+          size: [ 0.3 + Math.random() * 0.5, 0.4 + Math.random() * 0.8 ]
+        }))
       })
     }
     return list
@@ -36,26 +51,48 @@ export function CityEnvironment({ length }) {
   return (
     <group>
       {/* The Asphalt Road */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, -length/2]}>
-        <planeGeometry args={[10, length + 20]} />
-        <meshStandardMaterial color="#2d2d3a" roughness={0.8} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, -length/2]} receiveShadow>
+        <planeGeometry args={[12, length + 40]} />
+        <meshStandardMaterial color="#0a0a0f" roughness={0.6} metalness={0.4} />
+      </mesh>
+      
+      {/* Side Curbs / Sidewalks */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-6.5, -0.005, -length/2]}>
+        <planeGeometry args={[1, length + 40]} />
+        <meshStandardMaterial color="#1e293b" />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[6.5, -0.005, -length/2]}>
+        <planeGeometry args={[1, length + 40]} />
+        <meshStandardMaterial color="#1e293b" />
       </mesh>
       
       {/* The Lane lines */}
       {Array.from({ length: Math.floor(length / 10) }).map((_, i) => (
-        <mesh key={i} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, -(i * 10)]}>
+        <mesh key={i} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, -(i * 10)]}>
           <planeGeometry args={[0.2, 5]} />
-          <meshStandardMaterial color="#fcd34d" emissive="#fcd34d" emissiveIntensity={0.5} />
+          <meshStandardMaterial color="#3b82f6" emissive="#3b82f6" emissiveIntensity={4} />
         </mesh>
       ))}
 
       {/* Buildings */}
       {buildings.map((b, i) => (
-        <mesh key={`b-${i}`} position={b.position}>
-          <boxGeometry args={[b.scale[0], b.scale[1], b.scale[2]]} />
-          {/* Very dark blue/grey buildings with specular highlights */}
-          <meshStandardMaterial color="#0b0f19" roughness={0.3} metalness={0.8} />
-        </mesh>
+        <group key={`b-${i}`} position={b.position}>
+          <mesh>
+            <boxGeometry args={b.scale} />
+            <meshStandardMaterial color={b.color} roughness={0.2} metalness={0.9} />
+          </mesh>
+          {/* Windows on buildings */}
+          {b.windows.map((win, j) => (
+            <mesh key={`w-${j}`} position={win.pos}>
+              <planeGeometry args={win.size} />
+              <meshStandardMaterial 
+                color={i % 3 === 0 ? "#3b82f6" : "#f43f5e"} 
+                emissive={i % 3 === 0 ? "#3b82f6" : "#f43f5e"} 
+                emissiveIntensity={3} 
+              />
+            </mesh>
+          ))}
+        </group>
       ))}
 
       {/* Street Lamps */}

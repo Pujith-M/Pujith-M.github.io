@@ -1,50 +1,53 @@
-import { Html, Text } from '@react-three/drei'
+import { Text, Float, Image } from '@react-three/drei'
 
 export function Hero3D() {
   return (
     <group position={[0, 0, 0]}>
-      {/* 3D Intro Text */}
-      <Text 
-        position={[0, 4, -2]} 
-        fontSize={1.2} 
-        color="#f8fafc" 
-        anchorX="center" 
-        anchorY="middle"
-      >
-        Pujith M
-      </Text>
-      
-      <Text 
-        position={[0, 2.5, -2]} 
-        fontSize={0.5} 
-        color="#3b82f6" 
-        anchorX="center" 
-        anchorY="middle"
-      >
-        Senior Software Engineer | Blockchain Expert
-      </Text>
+      {/* 3D Intro Text - Centered & Floating */}
+      <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
+        <group position={[0, 4, -8]}>
+          <Text 
+            fontSize={2} 
+            color="white" 
+            anchorX="center" 
+          >
+            PUJITH M
+          </Text>
+          <Text 
+            position={[0, -1, 0]}
+            fontSize={0.6} 
+            color="#3b82f6" 
+            anchorX="center" 
+          >
+            SENIOR SOFTWARE ENGINEER | BLOCKCHAIN EXPERT
+          </Text>
+        </group>
+      </Float>
 
-      {/* Interactive HTML Card attached to the start point */}
-      <Html transform position={[4, 1.5, -5]} rotation={[0, -0.3, 0]} distanceFactor={8}>
-        <div className="glass-panel" style={{ width: '300px', textAlign: 'center' }}>
-          <img src="/PUJITH.jpeg" alt="Pujith M" style={{ width: '100px', height: '100px', borderRadius: '50%', marginBottom: '1rem', border: '3px solid var(--accent-blue)' }} />
-          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-            Bengaluru | Web3 Enthusiast
-          </p>
-          <a href="/resume.pdf" target="_blank" style={{ 
-            display: 'inline-block', 
-            marginTop: '1rem', 
-            padding: '10px 20px', 
-            background: 'rgba(59, 130, 246, 0.2)', 
-            border: '1px solid var(--accent-blue)', 
-            borderRadius: '8px',
-            color: 'white',
-            textDecoration: 'none'
-          }}>
-            Download Resume
-          </a>
-        </div>
-      </Html>
+      {/* 3D Profile Card instead of HTML */}
+      <group position={[5, 2.5, -12]} rotation={[0, -0.4, 0]}>
+        {/* Glass Backing */}
+        <mesh position={[0, 0, -0.1]}>
+          <planeGeometry args={[5, 6]} />
+          <meshStandardMaterial color="#0f172a" transparent opacity={0.8} roughness={0.2} />
+        </mesh>
+        {/* Neon Border */}
+        <mesh position={[0, 0, -0.05]}>
+          <planeGeometry args={[5.2, 6.2]} />
+          <meshBasicMaterial color="#3b82f6" wireframe />
+        </mesh>
+
+        <Text position={[0, 1.5, 0]} fontSize={0.6} color="white" anchorX="center">
+          Pujith M
+        </Text>
+        <Text position={[0, 0.8, 0]} fontSize={0.3} color="#94a3b8" anchorX="center">
+          Bengaluru | Web3 Enthusiast
+        </Text>
+        
+        <Text position={[0, -1.5, 0]} fontSize={0.4} color="#14b8a6" anchorX="center">
+          ↓ SCROLL TO DRIVE ↓
+        </Text>
+      </group>
     </group>
   )
 }
