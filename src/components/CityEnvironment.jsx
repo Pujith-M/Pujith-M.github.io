@@ -48,9 +48,9 @@ export const CityChunk = React.memo(({ startZ, length, seed = 12345 }) => {
     const spacing = 40
     for (let z = startZ; z > startZ - length; z -= spacing) {
       // Left lamp
-      list.push({ position: [-4, 0, z] })
+      list.push({ position: [-6.1, 0, z] })
       // Right lamp
-      list.push({ position: [4, 0, z - (spacing/2)] }) // offset slightly
+      list.push({ position: [6.1, 0, z - (spacing/2)] }) // offset slightly
     }
     return list
   }, [startZ, length])

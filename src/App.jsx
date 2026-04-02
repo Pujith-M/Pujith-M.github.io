@@ -10,8 +10,8 @@ import { CityChunk } from './components/CityEnvironment'
 import { TIMELINE } from './config/timeline' 
 import { validateTimeline } from './config/validator'
 
-// Total physical drive distance
-const TRACK_LENGTH = 600
+// Total physical drive distance - Increased to 1200 based on validation audit
+const TRACK_LENGTH = 1200
 const isDebugMode = window.location.search.includes('debug=true')
 
 // Lazy loaded heavy track components
@@ -153,8 +153,8 @@ function App() {
             </group>
           )
         })}
-        {/* Increase pages heavily to handle the huge 600 unit distance smoothly */}
-        <ScrollControls pages={25} damping={0.15}>
+        {/* Increase pages to 50 to handle the full 1200 unit journey smoothly */}
+        <ScrollControls pages={50} damping={0.15}>
           <CameraFollow />
           
           <group position={[0,0,0]}>
