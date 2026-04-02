@@ -1,6 +1,7 @@
-import { useRef, useMemo } from 'react'
+import React, { useRef, useMemo } from 'react'
 import { Instances, Instance } from '@react-three/drei'
-export function CityEnvironment({ length }) {
+
+export const CityEnvironment = React.memo(({ length }) => {
   // Generate random skyscrapers
   const buildings = useMemo(() => {
     let seed = 12345;
@@ -134,23 +135,7 @@ export function CityEnvironment({ length }) {
         })}
       </Instances>
 
-      {/* Street Lamp Lights (Must remain non-instanced) */}
-      {lamps.map((lamp, i) => {
-        const isLeft = lamp.position[0] < 0
-        return (
-          <group key={`ll-${i}`} position={[lamp.position[0] + (isLeft ? 1 : -1), lamp.position[1] + 5.9, lamp.position[2]]}>
-              <pointLight color="#fcd34d" intensity={2} distance={20} decay={2} />
-              <spotLight 
-                color="#fcd34d" 
-                intensity={5} 
-                angle={Math.PI / 4} 
-                penumbra={0.5} 
-                position={[0,0,0]} 
-                target-position={[isLeft ? 2 : -2, -6, 0]} 
-              />
-          </group>
-        )
-      })}
+
     </group>
   )
-}
+})

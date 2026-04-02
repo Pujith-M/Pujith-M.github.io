@@ -1,5 +1,6 @@
 import { Html, Text } from '@react-three/drei'
 import { FaEnvelope, FaPhone, FaLink } from 'react-icons/fa'
+import { HighwaySign } from './HighwaySign'
 
 export function ContactTrack({ startZ }) {
   return (
@@ -63,23 +64,4 @@ export function ContactTrack({ startZ }) {
   )
 }
 
-function HighwaySign({ position, title, subtext, color = "var(--accent-blue)" }) {
-  return (
-    <group position={position}>
-      <mesh position={[0, 6.5, 0]}>
-        <boxGeometry args={[12, 3, 0.2]} />
-        <meshStandardMaterial color="#020617" />
-      </mesh>
-      <mesh position={[0, 6.5, 0.11]}>
-        <boxGeometry args={[11.5, 2.5, 0.05]} />
-        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={2} wireframe />
-      </mesh>
-      <Text position={[0, 7.1, 0.2]} fontSize={0.8} color="white" anchorX="center" anchorY="middle">
-        {title}
-      </Text>
-      <Text position={[0, 6.1, 0.2]} fontSize={0.4} color="#94a3b8" anchorX="center" anchorY="middle">
-        {subtext}
-      </Text>
-    </group>
-  )
-}
+// Removed inline HighwaySign in favor of shared component

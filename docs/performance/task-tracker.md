@@ -27,7 +27,7 @@ Use this file if you want **Git-native tracking** (no external tools). Update st
 | PERF-13 | Worker Offloading | P1 | TODO |  |  |
 | PERF-14 | Content Streaming State Machine | P1 | TODO |  |  |
 | PERF-15 | Memory Leak Detection + Cleanup | P1 | TODO |  |  |
-| PERF-16 | React Re-render Minimization | P1 | TODO |  |  |
+| PERF-16 | React Re-render Minimization | P1 | DONE |  |  |
 | PERF-17 | Motion/Camera Smoothing | P1 | DONE |  |  |
 | PERF-18 | CDN + Immutable Caching | P1 | TODO |  |  |
 | PERF-19 | RUM + Telemetry Dashboard | P2 | TODO |  |  |

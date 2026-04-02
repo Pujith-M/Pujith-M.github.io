@@ -1,4 +1,5 @@
 import { Text, Float, Html } from '@react-three/drei'
+import { HighwaySign } from './HighwaySign'
 
 function SkillNode({ position, title, items, color }) {
   return (
@@ -43,6 +44,8 @@ function SkillNode({ position, title, items, color }) {
             position={[0, -(idx * 0.5), 0]} 
             color="#f8fafc"
             anchorX="center" 
+            outlineWidth={0.02}
+            outlineColor="#0f172a"
           >
             {item}
           </Text>
@@ -56,13 +59,16 @@ export function SkillsTrack({ startZ }) {
   return (
     <group>
       {/* Section Header */}
-      <Text position={[0, 5, startZ]} fontSize={2} color="#14b8a6" anchorX="center" anchorY="bottom">
-        Technical Arsenal
-      </Text>
+      <HighwaySign 
+        position={[0, 0, startZ]} 
+        title="ENTERING SKILLS" 
+        subtext="TECHNICAL ARSENAL" 
+        color="var(--accent-teal)" 
+      />
 
       {/* Left Node */}
       <SkillNode 
-        position={[-5, 3, startZ - 5]} 
+        position={[-5, 3, startZ - 15]} 
         title="Core Languages" 
         items={["Golang", "Solidity", "TypeScript", "Java"]} 
         color="#3b82f6" 
@@ -70,7 +76,7 @@ export function SkillsTrack({ startZ }) {
       
       {/* Right Node */}
       <SkillNode 
-        position={[5, 3, startZ - 10]} 
+        position={[5, 3, startZ - 20]} 
         title="Web3 & Blockchain" 
         items={["Web3", "Foundry", "Smart Contracts", "Postgres"]} 
         color="#8b5cf6" 
@@ -78,10 +84,17 @@ export function SkillsTrack({ startZ }) {
 
       {/* Left Node */}
       <SkillNode 
-        position={[-5, 3, startZ - 15]} 
+        position={[-5, 3, startZ - 25]} 
         title="Tools & Frameworks" 
         items={["React JS / Next JS", "Kafka", "Prometheus / Grafana"]} 
         color="#14b8a6" 
+      />
+      
+      <HighwaySign 
+        position={[0, 0, startZ - 35]} 
+        title="LEAVING SKILLS" 
+        subtext="END OF ZONE" 
+        color="var(--accent-pink)" 
       />
     </group>
   )

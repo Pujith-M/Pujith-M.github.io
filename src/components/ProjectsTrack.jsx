@@ -1,4 +1,5 @@
 import { Html, Text } from '@react-three/drei'
+import { HighwaySign } from './HighwaySign'
 
 function ProjectScreen({ position, name, tech, desc, rotationY }) {
   return (
@@ -68,20 +69,30 @@ export function ProjectsTrack({ startZ }) {
 
   return (
     <group>
-      <Text position={[0, 6, startZ]} fontSize={2} color="#8b5cf6" anchorX="center" anchorY="bottom">
-        Projects
-      </Text>
+      <HighwaySign 
+        position={[0, 0, startZ]} 
+        title="ENTERING PROJECTS" 
+        subtext="TOP CASE STUDIES" 
+        color="var(--accent-teal)" 
+      />
 
       {projects.map((proj, i) => (
         <ProjectScreen 
           key={i}
-          position={[i % 2 === 0 ? -6 : 6, 0, startZ - 5 - (i * 12)]}
+          position={[i % 2 === 0 ? -6 : 6, 0, startZ - 15 - (i * 15)]}
           name={proj.name}
           tech={proj.tech}
           desc={proj.desc}
           rotationY={i % 2 === 0 ? 0.2 : -0.2}
         />
       ))}
+      
+      <HighwaySign 
+        position={[0, 0, startZ - 55]} 
+        title="LEAVING PROJECTS" 
+        subtext="END OF ZONE" 
+        color="var(--accent-pink)" 
+      />
     </group>
   )
 }

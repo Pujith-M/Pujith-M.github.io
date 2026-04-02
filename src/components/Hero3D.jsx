@@ -10,6 +10,8 @@ export function Hero3D() {
             fontSize={2} 
             color="white" 
             anchorX="center" 
+            outlineWidth={0.04}
+            outlineColor="#020617"
           >
             PUJITH M
           </Text>
@@ -18,6 +20,8 @@ export function Hero3D() {
             fontSize={0.6} 
             color="#3b82f6" 
             anchorX="center" 
+            outlineWidth={0.02}
+            outlineColor="#020617"
           >
             SENIOR SOFTWARE ENGINEER | BLOCKCHAIN EXPERT
           </Text>
