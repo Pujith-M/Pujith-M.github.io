@@ -85,10 +85,11 @@ function App() {
         <directionalLight position={[10, 30, 20]} intensity={3.5} color="#a78bfa" castShadow />
         
         {/* Post Processing for Neon Glow */}
-        <EffectComposer disableNormalPass>
+        <EffectComposer disableNormalPass multisampling={0}>
           <Bloom 
             luminanceThreshold={1.2} 
-            mipmapBlur 
+            mipmapBlur={false} 
+            resolutionScale={0.5}
             intensity={1.0} 
             radius={0.4} 
           />

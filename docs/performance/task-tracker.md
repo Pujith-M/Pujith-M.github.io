@@ -20,7 +20,7 @@ Use this file if you want **Git-native tracking** (no external tools). Update st
 | PERF-06 | Device Quality Tiering | P0 | TODO |  |  |
 | PERF-07 | Dynamic DPR Controller | P0 | TODO |  |  |
 | PERF-08 | Baked/Hybrid Lighting | P0 | TODO |  |  |
-| PERF-09 | Post-Processing Optimization | P0 | TODO |  |  |
+| PERF-09 | Post-Processing Optimization | P0 | DONE |  |  |
 | PERF-10 | Texture Compression Strategy | P0 | TODO |  |  |
 | PERF-11 | GLTF/Asset Pipeline Optimization | P0 | TODO |  |  |
 | PERF-12 | Section Lazy Loading | P1 | TODO |  |  |
