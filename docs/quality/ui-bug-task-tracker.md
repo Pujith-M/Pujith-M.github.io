@@ -21,7 +21,7 @@ Git-native board for cleaning layout, removing unwanted elements, and fixing pla
 | UIBUG-07 | Deterministic billboard sequencing | P0 | TODO |  |  |
 | UIBUG-08 | Safe camera framing rules | P0 | TODO |  |  |
 | UIBUG-09 | Text readability pass | P0 | TODO |  |  |
-| UIBUG-10 | Z-fighting and flicker cleanup | P0 | TODO |  |  |
+| UIBUG-10 | Z-fighting and flicker cleanup | P0 | DONE |  |  |
 | UIBUG-11 | Responsive placement profiles | P1 | TODO |  |  |
 | UIBUG-12 | Occlusion rules for foreground props | P1 | TODO |  |  |
 | UIBUG-13 | Transition timing normalization | P1 | TODO |  |  |

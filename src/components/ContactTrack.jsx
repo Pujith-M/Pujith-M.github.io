@@ -41,10 +41,10 @@ export function ContactTrack({ startZ }) {
           <planeGeometry args={[7, 1]} />
           <meshBasicMaterial color="#ffffff" transparent opacity={0.03} />
         </mesh>
-        <Text position={[0, -1.8, 0.01]} fontSize={0.3} color="#94a3b8" anchorX="center" anchorY="middle">
+        <Text position={[0, -1.8, 0.05]} fontSize={0.3} color="#94a3b8" anchorX="center" anchorY="middle">
           SJB Institute of Technology
         </Text>
-        <Text position={[0, -2.15, 0.01]} fontSize={0.25} color="white" anchorX="center" anchorY="middle">
+        <Text position={[0, -2.15, 0.05]} fontSize={0.25} color="white" anchorX="center" anchorY="middle">
           Computer Science Engineering | 2014-2018
         </Text>
       </group>

@@ -74,7 +74,7 @@ function App() {
 
       <Canvas 
         shadows 
-        camera={{ position: [0, 4, 10], fov: 60 }}
+        camera={{ position: [0, 4, 10], fov: 60, near: 0.5, far: 800 }}
         gl={{ antialias: false, stencil: false }}
       >
         {/* Atmosphere & Lighting */}

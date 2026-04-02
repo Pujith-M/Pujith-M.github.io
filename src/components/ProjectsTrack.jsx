@@ -25,7 +25,7 @@ function ProjectScreen({ position, name, tech, desc, rotationY }) {
           <planeGeometry args={[3, 0.6]} />
           <meshBasicMaterial color="#8b5cf6" transparent opacity={0.2} />
         </mesh>
-        <Text position={[0, 0.3, 0.01]} fontSize={0.3} color="#8b5cf6" anchorX="center" anchorY="middle">
+        <Text position={[0, 0.3, 0.05]} fontSize={0.3} color="#8b5cf6" anchorX="center" anchorY="middle">
           {tech}
         </Text>
 
