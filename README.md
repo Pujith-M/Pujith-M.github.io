@@ -117,6 +117,19 @@ src/
 
 ---
 
+
+## 📈 V2 Performance Planning
+
+- Roadmap with 20 scale-focused performance improvements: `docs/performance/v2-performance-roadmap.md`
+- Repo-native tracker sheet: `docs/performance/task-tracker.md`
+- Issue template for each task: `.github/ISSUE_TEMPLATE/performance-task.md`
+
+## 🧹 V2 UI Bug Cleanup Planning
+
+- UI cleanup roadmap with 20 bug-focused improvements: `docs/quality/v2-ui-bug-cleanup-roadmap.md`
+- Repo-native UI bug tracker: `docs/quality/ui-bug-task-tracker.md`
+- Issue template for each UI bug task: `.github/ISSUE_TEMPLATE/ui-bug-task.md`
+
 ## 👤 About
 
 **Pujith M** — Senior Software Engineer & Blockchain Expert based in Bengaluru.

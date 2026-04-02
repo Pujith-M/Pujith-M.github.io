@@ -1,5 +1,4 @@
-import { motion } from 'framer-motion'
-import { FaGithub, FaLinkedin, FaEnvelope, FaPhone } from 'react-icons/fa'
+import { FaEnvelope, FaPhone } from 'react-icons/fa'
 
 export function Contact() {
   return (
@@ -12,11 +11,7 @@ export function Contact() {
       padding: '4rem 8%',
       textAlign: 'center'
     }}>
-      <motion.div 
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
+      <div
         className="glass-panel"
         style={{ maxWidth: '600px', width: '100%', padding: '3rem' }}
       >
@@ -39,7 +34,7 @@ export function Contact() {
             +91 9741283118
           </a>
         </div>
-      </motion.div>
+      </div>
 
       <footer style={{ marginTop: '4rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
         © {new Date().getFullYear()} Pujith M. Built with React Three Fiber.

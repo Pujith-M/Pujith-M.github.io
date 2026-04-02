@@ -1,34 +1,46 @@
-import { useRef, useMemo } from 'react'
+import { useMemo } from 'react'
+
+function pseudoRandom(seed) {
+  const x = Math.sin(seed * 12.9898) * 43758.5453123
+  return x - Math.floor(x)
+}
 
 export function CityEnvironment({ length }) {
   // Generate random skyscrapers
   const buildings = useMemo(() => {
     const list = []
-    const buildingVariations = 5
     for (let i = 0; i < 50; i++) {
-      const h = 10 + Math.random() * 50
-      const w = 4 + Math.random() * 6
-      const d = 4 + Math.random() * 6
+      const h = 10 + pseudoRandom(i * 1.1 + 1) * 50
+      const w = 4 + pseudoRandom(i * 1.3 + 2) * 6
+      const d = 4 + pseudoRandom(i * 1.7 + 3) * 6
       
       // Left side
       list.push({
-        position: [-22 - Math.random() * 30, h / 2, -Math.random() * length],
+        position: [-22 - pseudoRandom(i * 2.3 + 4) * 30, h / 2, -pseudoRandom(i * 2.9 + 5) * length],
         scale: [w, h, d],
         color: i % 2 === 0 ? "#0f172a" : "#020617",
-        windows: Array.from({ length: 6 }).map(() => ({
-          pos: [ (Math.random() - 0.5) * w, (Math.random() - 0.5) * h, d / 2 + 0.05 ],
-          size: [ 0.3 + Math.random() * 0.5, 0.4 + Math.random() * 0.8 ]
+        windows: Array.from({ length: 6 }).map((_, j) => ({
+          pos: [
+            (pseudoRandom(i * 10 + j * 2 + 6) - 0.5) * w,
+            (pseudoRandom(i * 10 + j * 2 + 7) - 0.5) * h,
+            d / 2 + 0.05
+          ],
+          size: [0.3 + pseudoRandom(i * 10 + j * 2 + 8) * 0.5, 0.4 + pseudoRandom(i * 10 + j * 2 + 9) * 0.8]
         }))
       })
       
       // Right side
       list.push({
-        position: [22 + Math.random() * 30, h / 2, -Math.random() * length],
+        position: [22 + pseudoRandom(i * 3.1 + 10) * 30, h / 2, -pseudoRandom(i * 3.7 + 11) * length],
         scale: [w, h, d],
         color: i % 2 === 1 ? "#0f172a" : "#020617",
-        windows: Array.from({ length: 6 }).map(() => ({
-          pos: [ (Math.random() - 0.5) * w, (Math.random() - 0.5) * h, -d / 2 - 0.05 ],
-          size: [ 0.3 + Math.random() * 0.5, 0.4 + Math.random() * 0.8 ]
+        windows: Array.from({ length: 6 }).map((_, j) => ({
+          pos: [
+            (pseudoRandom(i * 10 + j * 2 + 12) - 0.5) * w,
+            (pseudoRandom(i * 10 + j * 2 + 13) - 0.5) * h,
+            -d / 2 - 0.05
+          ],
+          size: [0.3 + pseudoRandom(i * 10 + j * 2 + 14) * 0.5, 0.4 + pseudoRandom(i * 10 + j * 2 + 15) * 0.8]
         }))
       })
     }

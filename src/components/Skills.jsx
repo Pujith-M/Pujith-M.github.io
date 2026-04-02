@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion'
 import { FaServer, FaCode, FaCubes, FaDatabase } from 'react-icons/fa'
 
 export function Skills() {
@@ -18,14 +17,9 @@ export function Skills() {
       justifyContent: 'center'
     }}>
       <div style={{ width: '100%', maxWidth: '1200px' }}>
-        <motion.h2 
-          initial={{ opacity: 0, x: -50 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          style={{ fontSize: '3rem', marginBottom: '3rem', textAlign: 'center' }}
-        >
+        <h2 style={{ fontSize: '3rem', marginBottom: '3rem', textAlign: 'center' }}>
           Technical <span className="gradient-text">Arsenal</span>
-        </motion.h2>
+        </h2>
 
         <div style={{ 
           display: 'grid', 
@@ -33,13 +27,8 @@ export function Skills() {
           gap: '2rem' 
         }}>
           {skills.map((skill, index) => (
-            <motion.div 
+            <div
               key={index}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1, duration: 0.5 }}
-              whileHover={{ scale: 1.05 }}
               className="glass-panel"
             >
               <div style={{ 
@@ -65,7 +54,7 @@ export function Skills() {
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

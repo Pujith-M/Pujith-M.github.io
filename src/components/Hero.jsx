@@ -1,12 +1,6 @@
-import { motion } from 'framer-motion'
-import { FaGithub, FaLinkedin, FaFileDownload, FaEnvelope } from 'react-icons/fa'
+import { FaFileDownload, FaEnvelope } from 'react-icons/fa'
 
 export function Hero() {
-  const containerVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
-  }
-
   return (
     <section style={{ 
       minHeight: '100vh', 
@@ -14,13 +8,7 @@ export function Hero() {
       alignItems: 'center', 
       padding: '0 8%',
     }}>
-      <motion.div 
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="glass-panel"
-        style={{ maxWidth: '800px', width: '100%' }}
-      >
+      <div className="glass-panel" style={{ maxWidth: '800px', width: '100%' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '2rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
           <img 
             src="/PUJITH.jpeg" 
@@ -57,7 +45,7 @@ export function Hero() {
             Current Work
           </a>
         </div>
-      </motion.div>
+      </div>
     </section>
   )
 }

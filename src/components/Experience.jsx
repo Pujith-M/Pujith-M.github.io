@@ -1,5 +1,3 @@
-import { motion } from 'framer-motion'
-
 export function Experience() {
   const experiences = [
     {
@@ -40,23 +38,14 @@ export function Experience() {
 
   return (
     <section style={{ padding: '4rem 8%', minHeight: '100vh' }}>
-      <motion.h2 
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        style={{ fontSize: '3rem', marginBottom: '4rem', textAlign: 'center' }}
-      >
+      <h2 style={{ fontSize: '3rem', marginBottom: '4rem', textAlign: 'center' }}>
         <span className="gradient-text">Experience</span> Timeline
-      </motion.h2>
+      </h2>
 
       <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
         {experiences.map((exp, index) => (
-          <motion.div 
+          <div
             key={index}
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.15, duration: 0.6 }}
             className="glass-panel"
             style={{ 
               borderLeft: '4px solid var(--accent-blue)', 
@@ -80,7 +69,7 @@ export function Experience() {
                 <li key={i} style={{ marginBottom: '10px', lineHeight: '1.6' }}>{pt}</li>
               ))}
             </ul>
-          </motion.div>
+          </div>
         ))}
       </div>
     </section>
