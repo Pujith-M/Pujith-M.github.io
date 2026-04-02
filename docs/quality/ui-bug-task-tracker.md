@@ -12,7 +12,7 @@ Git-native board for cleaning layout, removing unwanted elements, and fixing pla
 
 | ID | Task | Priority | Status | Owner | Link |
 |---|---|---|---|---|---|
-| UIBUG-01 | Remove runtime random placement | P0 | TODO |  |  |
+| UIBUG-01 | Remove runtime random placement | P0 | DONE |  |  |
 | UIBUG-02 | Define track layout grid system | P0 | TODO |  |  |
 | UIBUG-03 | Content spacing contract | P0 | TODO |  |  |
 | UIBUG-04 | Collision/overlap validation utility | P0 | TODO |  |  |

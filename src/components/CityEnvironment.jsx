@@ -3,32 +3,38 @@ import { useRef, useMemo } from 'react'
 export function CityEnvironment({ length }) {
   // Generate random skyscrapers
   const buildings = useMemo(() => {
+    let seed = 12345;
+    const random = () => {
+      const x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    };
+
     const list = []
     const buildingVariations = 5
     for (let i = 0; i < 50; i++) {
-      const h = 10 + Math.random() * 50
-      const w = 4 + Math.random() * 6
-      const d = 4 + Math.random() * 6
+      const h = 10 + random() * 50
+      const w = 4 + random() * 6
+      const d = 4 + random() * 6
       
       // Left side
       list.push({
-        position: [-22 - Math.random() * 30, h / 2, -Math.random() * length],
+        position: [-22 - random() * 30, h / 2, -random() * length],
         scale: [w, h, d],
         color: i % 2 === 0 ? "#0f172a" : "#020617",
         windows: Array.from({ length: 6 }).map(() => ({
-          pos: [ (Math.random() - 0.5) * w, (Math.random() - 0.5) * h, d / 2 + 0.05 ],
-          size: [ 0.3 + Math.random() * 0.5, 0.4 + Math.random() * 0.8 ]
+          pos: [ (random() - 0.5) * w, (random() - 0.5) * h, d / 2 + 0.05 ],
+          size: [ 0.3 + random() * 0.5, 0.4 + random() * 0.8 ]
         }))
       })
       
       // Right side
       list.push({
-        position: [22 + Math.random() * 30, h / 2, -Math.random() * length],
+        position: [22 + random() * 30, h / 2, -random() * length],
         scale: [w, h, d],
         color: i % 2 === 1 ? "#0f172a" : "#020617",
         windows: Array.from({ length: 6 }).map(() => ({
-          pos: [ (Math.random() - 0.5) * w, (Math.random() - 0.5) * h, -d / 2 - 0.05 ],
-          size: [ 0.3 + Math.random() * 0.5, 0.4 + Math.random() * 0.8 ]
+          pos: [ (random() - 0.5) * w, (random() - 0.5) * h, -d / 2 - 0.05 ],
+          size: [ 0.3 + random() * 0.5, 0.4 + random() * 0.8 ]
         }))
       })
     }
