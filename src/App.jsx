@@ -4,16 +4,19 @@ import { ScrollControls, useScroll, Float } from '@react-three/drei'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import { Car } from './components/Car'
 import { Hero3D } from './components/Hero3D'
-import { ExperienceTrack } from './components/ExperienceTrack'
-import { SkillsTrack } from './components/SkillsTrack'
-import { ProjectsTrack } from './components/ProjectsTrack'
-import { ContactTrack } from './components/ContactTrack'
+import { Suspense, lazy } from 'react'
+import * as THREE from 'three'
+
 import { CityEnvironment } from './components/CityEnvironment'
 
 // Total physical drive distance
 const TRACK_LENGTH = 600
 
-import * as THREE from 'three'
+// Lazy loaded heavy track components
+const ExperienceTrack = lazy(() => import('./components/ExperienceTrack').then(module => ({ default: module.ExperienceTrack })))
+const SkillsTrack = lazy(() => import('./components/SkillsTrack').then(module => ({ default: module.SkillsTrack })))
+const ProjectsTrack = lazy(() => import('./components/ProjectsTrack').then(module => ({ default: module.ProjectsTrack })))
+const ContactTrack = lazy(() => import('./components/ContactTrack').then(module => ({ default: module.ContactTrack })))
 
 // A wrapper component to make the camera follow the car
 function CameraFollow() {
@@ -22,18 +25,19 @@ function CameraFollow() {
   // We use a persistent Vector3 to avoid creating objects in the render loop
   const targetVec = new THREE.Vector3()
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
     const currentScroll = scroll.offset
     const targetZ = -currentScroll * TRACK_LENGTH
     
     // GTA Vice City style POV: close behind and slightly above the car
     targetVec.set(0, 2.5, targetZ + 5)
     
-    // Smoothly follow the car
-    state.camera.position.lerp(targetVec, 0.1)
+    // Framerate-independent smoothing
+    const lerpFactor = 1 - Math.exp(-5 * delta)
+    state.camera.position.lerp(targetVec, lerpFactor)
     
-    // Look ahead of the car, looking down slightly directly ahead
-    state.camera.lookAt(0, 1.5, targetZ - 20)
+    // Look ahead of the car, explicitly elevated to ensure tall highway signs stay safely in-frame bounds
+    state.camera.lookAt(0, 3.5, targetZ - 20)
   })
   
   return null
@@ -74,6 +78,7 @@ function App() {
 
       <Canvas 
         shadows 
+        dpr={[1, 2]}
         camera={{ position: [0, 4, 10], fov: 60, near: 0.5, far: 800 }}
         gl={{ antialias: false, stencil: false }}
       >
@@ -108,14 +113,13 @@ function App() {
             {/* The Zones */}
             <Hero3D />                               {/* Z = 0 */}
             
-            {/* Experience Track takes up ~330 units */}
-            <ExperienceTrack startZ={-40} />
-            
-            <SkillsTrack startZ={-430} />
-            
-            <ProjectsTrack startZ={-470} />
-
-            <ContactTrack startZ={-540} />
+            <Suspense fallback={null}>
+              {/* Experience Track takes up ~330 units */}
+              <ExperienceTrack startZ={-40} />
+              <SkillsTrack startZ={-430} />
+              <ProjectsTrack startZ={-470} />
+              <ContactTrack startZ={-540} />
+            </Suspense>
             
           </group>
 

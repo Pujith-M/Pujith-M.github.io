@@ -19,7 +19,7 @@ Git-native board for cleaning layout, removing unwanted elements, and fixing pla
 | UIBUG-05 | Remove unwanted decorative elements | P0 | TODO |  |  |
 | UIBUG-06 | Canonical experience timeline schema | P0 | TODO |  |  |
 | UIBUG-07 | Deterministic billboard sequencing | P0 | TODO |  |  |
-| UIBUG-08 | Safe camera framing rules | P0 | TODO |  |  |
+| UIBUG-08 | Safe camera framing rules | P0 | DONE |  |  |
 | UIBUG-09 | Text readability pass | P0 | TODO |  |  |
 | UIBUG-10 | Z-fighting and flicker cleanup | P0 | DONE |  |  |
 | UIBUG-11 | Responsive placement profiles | P1 | TODO |  |  |
