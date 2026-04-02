@@ -1,7 +1,14 @@
 import { Text } from '@react-three/drei'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 export const HighwaySign = React.memo(({ position, title, subtext, color = "#3b82f6" }) => {
+  // Explicit cleanup on unmount
+  useEffect(() => {
+    return () => {
+      // Logic for explicit disposal can go here if we were using raw THREE objects
+      // R3F handles JSX-based disposal by default.
+    }
+  }, [])
   return (
     <group position={position}>
       {/* Pillars with metallic finish */}

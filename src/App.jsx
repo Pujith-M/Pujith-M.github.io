@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect } from 'react'
+import { Suspense, lazy, useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { ScrollControls, useScroll, Float, BakeShadows } from '@react-three/drei'
@@ -8,6 +8,7 @@ import { Car } from './components/Car'
 import { Hero3D } from './components/Hero3D'
 import { CityChunk } from './components/CityEnvironment'
 import { TIMELINE } from './config/timeline' 
+import { validateTimeline } from './config/validator'
 
 // Total physical drive distance
 const TRACK_LENGTH = 600
@@ -25,26 +26,27 @@ const VISIBILITY_THRESHOLD = 150
 function TrackManager({ scrollOffset }) {
   const currentZ = -scrollOffset * TRACK_LENGTH
   
-  const experienceData = TIMELINE.filter(t => t.type === 'EXPERIENCE')
-  const skillsData = TIMELINE.filter(t => t.type === 'SKILLS')
-  const projectsData = TIMELINE.filter(t => t.type === 'PROJECTS')
+  // Memoize filtered data to prevent re-filtering every frame
+  const experienceData = useMemo(() => TIMELINE.filter(t => t.type === 'EXPERIENCE'), [])
+  const skillsData = useMemo(() => TIMELINE.filter(t => t.type === 'SKILLS'), [])
+  const projectsData = useMemo(() => TIMELINE.filter(t => t.type === 'PROJECTS'), [])
 
   return (
     <Suspense fallback={null}>
       {/* Hero is always at the start, Z = [0, -30] approx */}
-      {currentZ > -100 && <Hero3D />}
+      {currentZ > -150 && <Hero3D />}
 
       {/* Experience Track: Z = [-40, -370] */}
-      {currentZ < 100 && currentZ > -500 && <ExperienceTrack startZ={-40} data={experienceData} />}
+      {currentZ < 150 && currentZ > -550 && <ExperienceTrack startZ={-40} data={experienceData} />}
 
       {/* Skills Track: Z = [-430, -465] */}
-      {currentZ < -300 && currentZ > -600 && <SkillsTrack startZ={-430} data={skillsData} />}
+      {currentZ < -250 && currentZ > -650 && <SkillsTrack startZ={-430} data={skillsData} />}
 
       {/* Projects Track: Z = [-470, -525] */}
-      {currentZ < -350 && currentZ > -700 && <ProjectsTrack startZ={-470} data={projectsData} />}
+      {currentZ < -350 && currentZ > -750 && <ProjectsTrack startZ={-470} data={projectsData} />}
 
       {/* Contact Track: Z = [-540, -550] */}
-      {currentZ < -400 && <ContactTrack startZ={-540} />}
+      {currentZ < -450 && <ContactTrack startZ={-540} />}
     </Suspense>
   )
 }
@@ -75,7 +77,15 @@ function CameraFollow() {
 }
 
 function App() {
-  // Handle Keyboard Navigation (Arrows Up/Down)
+  // 1. Validate Timeline on Startup
+  useEffect(() => {
+    const warnings = validateTimeline(TIMELINE)
+    if (warnings.length > 0) {
+      console.warn("Timeline Validation Warnings:", warnings)
+    }
+  }, [])
+
+  // 2. Handle Keyboard Navigation (Arrows Up/Down)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowUp') {

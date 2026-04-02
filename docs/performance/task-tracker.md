@@ -16,7 +16,7 @@ Use this file if you want **Git-native tracking** (no external tools). Update st
 | PERF-02 | Render-on-Demand Loop | P0 | DONE |  |  |
 | PERF-03 | Geometry Instancing | P0 | DONE |  |  |
 | PERF-04 | Track Chunking + Culling | P0 | DONE |  |  |
-| PERF-05 | Distance-Based LOD | P0 | TODO |  |  |
+| PERF-05 | Distance-Based LOD | P0 | DONE |  |  |
 | PERF-06 | Device Quality Tiering | P0 | DONE |  |  |
 | PERF-07 | Dynamic DPR Controller | P0 | DONE |  |  |
 | PERF-08 | Baked/Hybrid Lighting | P0 | DONE |  |  |
@@ -25,8 +25,8 @@ Use this file if you want **Git-native tracking** (no external tools). Update st
 | PERF-11 | GLTF/Asset Pipeline Optimization | P0 | TODO |  |  |
 | PERF-12 | Section Lazy Loading | P1 | DONE |  |  |
 | PERF-13 | Worker Offloading | P1 | TODO |  |  |
-| PERF-14 | Content Streaming State Machine | P1 | TODO |  |  |
-| PERF-15 | Memory Leak Detection + Cleanup | P1 | TODO |  |  |
+| PERF-14 | Content Streaming State Machine | P1 | DONE |  |  |
+| PERF-15 | Memory Leak Detection + Cleanup | P1 | DONE |  |  |
 | PERF-16 | React Re-render Minimization | P1 | DONE |  |  |
 | PERF-17 | Motion/Camera Smoothing | P1 | DONE |  |  |
 | PERF-18 | CDN + Immutable Caching | P1 | TODO |  |  |

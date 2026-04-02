@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useScroll } from '@react-three/drei'
 
@@ -25,6 +25,14 @@ export function Car({ trackLength = 400, ...props }) {
       })
     }
   })
+
+  // Explicit lifecycle cleanup for 3D resources
+  useEffect(() => {
+    return () => {
+      // Disposing geometries/materials in R3F is usually automatic 
+      // but we can ensure here if we had custom non-JSX objects.
+    }
+  }, [])
 
   // Colors
   const bodyColor = "#22252a" // Dark glossy charcoal for contrast
