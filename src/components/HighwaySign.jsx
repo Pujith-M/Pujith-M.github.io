@@ -1,7 +1,7 @@
 import { Text } from '@react-three/drei'
 import React from 'react'
 
-export const HighwaySign = React.memo(({ position, title, subtext, color = "var(--accent-blue)" }) => {
+export const HighwaySign = React.memo(({ position, title, subtext, color = "#3b82f6" }) => {
   return (
     <group position={position}>
       {/* Pillars with metallic finish */}

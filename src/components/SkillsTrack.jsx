@@ -1,5 +1,6 @@
 import { Text, Float, Html } from '@react-three/drei'
 import { HighwaySign } from './HighwaySign'
+import { LAYOUT } from '../config/layout'
 
 function SkillNode({ position, title, items, color }) {
   return (
@@ -63,12 +64,12 @@ export function SkillsTrack({ startZ }) {
         position={[0, 0, startZ]} 
         title="ENTERING SKILLS" 
         subtext="TECHNICAL ARSENAL" 
-        color="var(--accent-teal)" 
+        color="#14b8a6" 
       />
 
       {/* Left Node */}
       <SkillNode 
-        position={[-5, 3, startZ - 15]} 
+        position={[LAYOUT.LANES.LEFT + 1.5, 3, startZ - LAYOUT.SPACING.BILLBOARD_GAP]} 
         title="Core Languages" 
         items={["Golang", "Solidity", "TypeScript", "Java"]} 
         color="#3b82f6" 
@@ -76,7 +77,7 @@ export function SkillsTrack({ startZ }) {
       
       {/* Right Node */}
       <SkillNode 
-        position={[5, 3, startZ - 20]} 
+        position={[LAYOUT.LANES.RIGHT - 1.5, 3, startZ - LAYOUT.SPACING.BILLBOARD_GAP - 5]} 
         title="Web3 & Blockchain" 
         items={["Web3", "Foundry", "Smart Contracts", "Postgres"]} 
         color="#8b5cf6" 
@@ -84,17 +85,17 @@ export function SkillsTrack({ startZ }) {
 
       {/* Left Node */}
       <SkillNode 
-        position={[-5, 3, startZ - 25]} 
+        position={[LAYOUT.LANES.LEFT + 1.5, 3, startZ - LAYOUT.SPACING.BILLBOARD_GAP - 10]} 
         title="Tools & Frameworks" 
         items={["React JS / Next JS", "Kafka", "Prometheus / Grafana"]} 
         color="#14b8a6" 
       />
       
       <HighwaySign 
-        position={[0, 0, startZ - 35]} 
+        position={[0, LAYOUT.BILLBOARD.SIGN_HEIGHT, startZ - LAYOUT.SPACING.SECTION_BUFFER]} 
         title="LEAVING SKILLS" 
         subtext="END OF ZONE" 
-        color="var(--accent-pink)" 
+        color="#ec4899" 
       />
     </group>
   )

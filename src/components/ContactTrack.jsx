@@ -1,16 +1,17 @@
 import { Html, Text } from '@react-three/drei'
 import { FaEnvelope, FaPhone, FaLink } from 'react-icons/fa'
 import { HighwaySign } from './HighwaySign'
+import { LAYOUT } from '../config/layout'
 
 export function ContactTrack({ startZ }) {
   return (
     <group position={[0, 0, startZ]}>
       {/* End of Road Sign - Neon Style */}
       <HighwaySign 
-        position={[0, 0, 0]} 
+        position={[0, LAYOUT.BILLBOARD.SIGN_HEIGHT, 0]} 
         title="JOURNEY COMPLETE" 
         subtext="THE ROAD ENDS HERE" 
-        color="var(--accent-pink)" 
+        color="#ec4899" 
       />
 
       {/* 3D Contact Billboard */}
@@ -58,7 +59,7 @@ export function ContactTrack({ startZ }) {
       {/* Glowing Exit Gate */}
       <mesh position={[0, 5, -4.9]} rotation={[0, 0, 0]}>
          <planeGeometry args={[15, 10]} />
-         <meshStandardMaterial color="var(--accent-teal)" emissive="var(--accent-teal)" emissiveIntensity={5} wireframe />
+         <meshStandardMaterial color="#14b8a6" emissive="#14b8a6" emissiveIntensity={5} wireframe />
       </mesh>
     </group>
   )

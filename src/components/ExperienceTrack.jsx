@@ -1,10 +1,11 @@
 import { Html, Text } from '@react-three/drei'
 import { HighwaySign } from './HighwaySign'
+import { LAYOUT } from '../config/layout'
 
 // Removed inline HighwaySign in favor of shared component
 // Individual Ad Billboard for each bullet point
 function AdBillboard({ position, text, role, side = "left" }) {
-  const xOffset = side === "left" ? -8.5 : 8.5
+  const xOffset = side === "left" ? LAYOUT.LANES.OFFROAD_LEFT : LAYOUT.LANES.OFFROAD_RIGHT
   const finalPos = [position[0] + xOffset, position[1], position[2]]
   const accentColor = side === "left" ? "#14b8a6" : "#3b82f6"
 
@@ -97,13 +98,13 @@ export function ExperienceTrack({ startZ = -20 }) {
     componentsToRender.push(
       <HighwaySign 
         key={`enter-${index}`} 
-        position={[0, 0, currentZ]} 
+        position={[0, LAYOUT.BILLBOARD.SIGN_HEIGHT, currentZ]} 
         title={`ENTERING ${exp.company.toUpperCase()}`} 
         subtext={exp.role} 
-        color="var(--accent-teal)"
+        color="#14b8a6"
       />
     )
-    currentZ -= 25 // Greater spacing for premium feel
+    currentZ -= LAYOUT.SPACING.SECTION_BUFFER
 
     // 2. Spread bullet points as individual alternating billboards
     exp.points.forEach((pt, ptIndex) => {
@@ -116,22 +117,22 @@ export function ExperienceTrack({ startZ = -20 }) {
           side={ptIndex % 2 === 0 ? "left" : "right"}
         />
       )
-      currentZ -= 18 // More distance for easier reading
+      currentZ -= LAYOUT.SPACING.BILLBOARD_GAP
     })
 
-    currentZ -= 15
+    currentZ -= LAYOUT.SPACING.BILLBOARD_GAP
 
     // 3. Leaving Sign
     componentsToRender.push(
       <HighwaySign 
         key={`exit-${index}`} 
-        position={[0, 0, currentZ]} 
+        position={[0, LAYOUT.BILLBOARD.SIGN_HEIGHT, currentZ]} 
         title={`LEAVING ${exp.company.toUpperCase()}`} 
         subtext="END OF EXPERIENCE ZONE" 
-        color="var(--accent-pink)"
+        color="#ec4899"
       />
     )
-    currentZ -= 40
+    currentZ -= LAYOUT.SPACING.SECTION_BUFFER
   })
 
   // Expose the final Z so other tracks know where to start? 

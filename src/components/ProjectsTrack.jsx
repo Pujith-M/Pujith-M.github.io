@@ -1,5 +1,6 @@
 import { Html, Text } from '@react-three/drei'
 import { HighwaySign } from './HighwaySign'
+import { LAYOUT } from '../config/layout'
 
 function ProjectScreen({ position, name, tech, desc, rotationY }) {
   return (
@@ -7,7 +8,7 @@ function ProjectScreen({ position, name, tech, desc, rotationY }) {
       {/* Holographic Frame */}
       <mesh position={[0, 2.2, 0]}>
         <boxGeometry args={[6.2, 4.2, 0.1]} />
-        <meshStandardMaterial color="var(--accent-purple)" emissive="var(--accent-purple)" emissiveIntensity={2} wireframe />
+        <meshStandardMaterial color="#8b5cf6" emissive="#8b5cf6" emissiveIntensity={2} wireframe />
       </mesh>
       
       {/* The Actual Content via 3D Text (Holographic look) */}
@@ -42,7 +43,7 @@ function ProjectScreen({ position, name, tech, desc, rotationY }) {
       </mesh>
       <mesh position={[0, -1.9, 0]}>
          <sphereGeometry args={[0.5, 16, 16]} />
-         <meshStandardMaterial color="var(--accent-purple)" emissive="var(--accent-purple)" emissiveIntensity={5} />
+         <meshStandardMaterial color="#8b5cf6" emissive="#8b5cf6" emissiveIntensity={5} />
       </mesh>
     </group>
   )
@@ -70,28 +71,28 @@ export function ProjectsTrack({ startZ }) {
   return (
     <group>
       <HighwaySign 
-        position={[0, 0, startZ]} 
+        position={[0, LAYOUT.BILLBOARD.SIGN_HEIGHT, startZ]} 
         title="ENTERING PROJECTS" 
         subtext="TOP CASE STUDIES" 
-        color="var(--accent-teal)" 
+        color="#14b8a6" 
       />
 
       {projects.map((proj, i) => (
         <ProjectScreen 
           key={i}
-          position={[i % 2 === 0 ? -6 : 6, 0, startZ - 15 - (i * 15)]}
+          position={[i % 2 === 0 ? LAYOUT.LANES.RIGHT : LAYOUT.LANES.LEFT, 0, startZ - LAYOUT.SPACING.BILLBOARD_GAP - (i * LAYOUT.SPACING.BILLBOARD_GAP)]}
           name={proj.name}
           tech={proj.tech}
           desc={proj.desc}
-          rotationY={i % 2 === 0 ? 0.2 : -0.2}
+          rotationY={i % 2 === 0 ? -0.2 : 0.2}
         />
       ))}
       
       <HighwaySign 
-        position={[0, 0, startZ - 55]} 
+        position={[0, LAYOUT.BILLBOARD.SIGN_HEIGHT, startZ - (projects.length * LAYOUT.SPACING.BILLBOARD_GAP) - LAYOUT.SPACING.SECTION_BUFFER]} 
         title="LEAVING PROJECTS" 
         subtext="END OF ZONE" 
-        color="var(--accent-pink)" 
+        color="#ec4899" 
       />
     </group>
   )

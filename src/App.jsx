@@ -18,6 +18,32 @@ const SkillsTrack = lazy(() => import('./components/SkillsTrack').then(module =>
 const ProjectsTrack = lazy(() => import('./components/ProjectsTrack').then(module => ({ default: module.ProjectsTrack })))
 const ContactTrack = lazy(() => import('./components/ContactTrack').then(module => ({ default: module.ContactTrack })))
 
+// Visibility constant: how many units ahead/behind to keep tracks mounted
+const VISIBILITY_THRESHOLD = 150
+
+function TrackManager({ scrollOffset }) {
+  const currentZ = -scrollOffset * TRACK_LENGTH
+  
+  return (
+    <Suspense fallback={null}>
+      {/* Hero is always at the start, Z = [0, -30] approx */}
+      {currentZ > -100 && <Hero3D />}
+
+      {/* Experience Track: Z = [-40, -370] */}
+      {currentZ < 100 && currentZ > -500 && <ExperienceTrack startZ={-40} />}
+
+      {/* Skills Track: Z = [-430, -465] */}
+      {currentZ < -300 && currentZ > -600 && <SkillsTrack startZ={-430} />}
+
+      {/* Projects Track: Z = [-470, -525] */}
+      {currentZ < -350 && currentZ > -700 && <ProjectsTrack startZ={-470} />}
+
+      {/* Contact Track: Z = [-540, -550] */}
+      {currentZ < -400 && <ContactTrack startZ={-540} />}
+    </Suspense>
+  )
+}
+
 // A wrapper component to make the camera follow the car
 function CameraFollow() {
   const scroll = useScroll()
@@ -40,7 +66,7 @@ function CameraFollow() {
     state.camera.lookAt(0, 3.5, targetZ - 20)
   })
   
-  return null
+  return <TrackManager scrollOffset={scroll.offset} />
 }
 
 function App() {
@@ -78,6 +104,7 @@ function App() {
 
       <Canvas 
         shadows 
+        frameloop="demand"
         dpr={[1, 2]}
         camera={{ position: [0, 4, 10], fov: 60, near: 0.5, far: 800 }}
         gl={{ antialias: false, stencil: false, powerPreference: 'high-performance' }}
@@ -112,16 +139,7 @@ function App() {
           <group position={[0,0,0]}>
             <Car trackLength={TRACK_LENGTH} />
             
-            {/* The Zones */}
-            <Hero3D />                               {/* Z = 0 */}
-            
-            <Suspense fallback={null}>
-              {/* Experience Track takes up ~330 units */}
-              <ExperienceTrack startZ={-40} />
-              <SkillsTrack startZ={-430} />
-              <ProjectsTrack startZ={-470} />
-              <ContactTrack startZ={-540} />
-            </Suspense>
+            {/* Tracks are now managed by TrackManager inside CameraFollow for culling */}
             
           </group>
 
