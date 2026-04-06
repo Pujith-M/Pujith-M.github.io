@@ -57,7 +57,7 @@ function TrackManager({ scrollOffset }) {
   return (
     <Suspense fallback={<SceneLoader />}>
       {/* Hero is always at the start, Z = [0, -30] approx */}
-      {currentZ > -150 && <Hero3D />}
+      {currentZ > -150 && <Hero3D isMobile={window.innerWidth < 768} />}
 
       {/* Experience Track: Z = [-40, -370] */}
       {currentZ < 150 && currentZ > -650 && <ExperienceTrack startZ={TRACK_STARTS.EXPERIENCE} data={experienceData} />}
@@ -121,6 +121,17 @@ function CameraFollow() {
 
 function App() {
   const [showIntroLoader, setShowIntroLoader] = useState(true)
+  const [sceneReady, setSceneReady] = useState(false)
+  const [hasInteracted, setHasInteracted] = useState(false)
+  const [isReducedMotion, setIsReducedMotion] = useState(false)
+
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const sync = () => setIsReducedMotion(media.matches)
+    sync()
+    media.addEventListener('change', sync)
+    return () => media.removeEventListener('change', sync)
+  }, [])
 
   // 1. Validate Timeline in a Web Worker (PERF-13)
   useEffect(() => {
@@ -136,12 +147,25 @@ function App() {
   }, [])
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setShowIntroLoader(false), 1400)
+    if (!sceneReady) return
+    const timer = window.setTimeout(() => setShowIntroLoader(false), 300)
     return () => window.clearTimeout(timer)
+  }, [sceneReady])
+
+  useEffect(() => {
+    const onInteract = () => setHasInteracted(true)
+    window.addEventListener('wheel', onInteract, { passive: true })
+    window.addEventListener('keydown', onInteract)
+    window.addEventListener('pointerdown', onInteract)
+    return () => {
+      window.removeEventListener('wheel', onInteract)
+      window.removeEventListener('keydown', onInteract)
+      window.removeEventListener('pointerdown', onInteract)
+    }
   }, [])
 
   return (
-    <div style={{ width: '100vw', height: '100vh', background: '#030014', overflow: 'hidden' }}>
+    <div style={{ width: '100vw', height: '100vh', background: '#030014', overflow: 'hidden' }} role="application" aria-label="Interactive portfolio drive">
       {showIntroLoader && (
         <div style={{
           position: 'absolute',
@@ -167,20 +191,29 @@ function App() {
         </div>
       )}
       
-      {/* HTML Overlay Intros */}
-      <div style={{
-          position: 'absolute',
-          top: '30px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 10,
-          pointerEvents: 'none',
-          textAlign: 'center'
-      }}>
-         <h1 className="gradient-text" style={{ fontSize: '2.5rem', margin: 0 }}>Pujith M</h1>
-         <p style={{ margin: '5px 0 0 0', color: 'var(--text-muted)', fontSize: '0.9rem', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
-           Scroll or Use ↑ ↓ Arrows to Drive
-         </p>
+      {/* HTML Overlay Intro */}
+      <div className="hero-overlay" aria-live="polite">
+        <h1 className="gradient-text hero-title">Pujith M</h1>
+        <p className="hero-subtitle">Senior Software Engineer • Blockchain Expert</p>
+        {!hasInteracted && <p className="hero-instruction">Scroll to start • ↑ / ↓ also works</p>}
+        <div className="hero-cta-group">
+          <a className="hero-cta hero-cta-primary" href="/resume.pdf" target="_blank" rel="noreferrer">
+            View Resume
+          </a>
+          <button
+            className="hero-cta hero-cta-secondary"
+            onClick={() => {
+              setHasInteracted(true)
+              window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown' }))
+            }}
+            type="button"
+          >
+            Start Journey
+          </button>
+          <a className="hero-cta hero-cta-secondary" href="mailto:pujithcareerventure@gmail.com">
+            Contact
+          </a>
+        </div>
       </div>
 
       <Canvas 
@@ -189,6 +222,7 @@ function App() {
         dpr={[1, 2]}
         camera={{ position: [0, 5, 13], fov: 58, near: 0.5, far: 800 }}
         gl={{ antialias: false, stencil: false, powerPreference: 'high-performance' }}
+        onCreated={() => setSceneReady(true)}
       >
         {isDebugMode && <Perf position="top-left" />}
         {/* Atmosphere & Lighting */}
@@ -203,11 +237,11 @@ function App() {
         {/* Post Processing for Neon Glow */}
         <EffectComposer disableNormalPass multisampling={0}>
           <Bloom 
-            luminanceThreshold={1.2} 
+            luminanceThreshold={1.28} 
             mipmapBlur={false} 
             resolutionScale={0.5}
-            intensity={1.0} 
-            radius={0.4} 
+            intensity={isReducedMotion ? 0.45 : 0.78} 
+            radius={isReducedMotion ? 0.22 : 0.3} 
           />
         </EffectComposer>
 
