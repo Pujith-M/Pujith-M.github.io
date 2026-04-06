@@ -1,0 +1,39 @@
+name: Performance Budget Check
+on: [pull_request]
+
+jobs:
+  check-budget:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install
+        run: npm ci || npm install
+      - name: Build
+        run: npm run build
+      - name: Verify Bundle Size
+        run: |
+          MAX_JS_KB=1500
+          # Find max JS bundle size
+          JS_B_MAX=$(ls -l dist/assets/*.js | awk '{print $5}' | sort -nr | head -1)
+          JS_KB=$(echo "scale=2; $JS_B_MAX / 1024" | bc)
+          if (( $(echo "$JS_KB > $MAX_JS_KB" | bc -l) )); then
+            echo "::error::JS bundle size ($JS_KB KB) exceeds budget of $MAX_JS_KB KB"
+            exit 1
+          else
+            echo "JS bundle size ($JS_KB KB) is within budget ($MAX_JS_KB KB)."
+          fi
+          
+          MAX_CSS_KB=50
+          CSS_B_MAX=$(ls -l dist/assets/*.css | awk '{print $5}' | sort -nr | head -1)
+          if [ -n "$CSS_B_MAX" ]; then
+            CSS_KB=$(echo "scale=2; $CSS_B_MAX / 1024" | bc)
+            if (( $(echo "$CSS_KB > $MAX_CSS_KB" | bc -l) )); then
+              echo "::error::CSS bundle size ($CSS_KB KB) exceeds budget of $MAX_CSS_KB KB"
+              exit 1
+            fi
+            echo "CSS bundle size ($CSS_KB KB) complies with budget ($MAX_CSS_KB KB)."
+          fi
