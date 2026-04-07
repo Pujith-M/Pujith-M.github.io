@@ -6,18 +6,12 @@ import { COLORS } from '../config/colors'
 export const HighwaySign = React.memo(({ position, title, subtext, color = COLORS.VIVID_CYAN }) => {
   const glowRef = useRef()
   
-  // Fix 4: Deterministic Neon Flicker based on time and position seed
-  // Avoids Math.random() in the render loop which causes excessive visual layout noise/CPU churn
-  const seed = position ? position[0] + position[2] : 0;
-  
+  // Subtle Neon Flicker
   useFrame((state) => {
     if (glowRef.current) {
       const time = state.clock.getElapsedTime()
-      // Base glow + slow wave + fast micro-flicker that only triggers on certain sine peaks
-      const slowWave = Math.sin(time * 2 + seed) * 0.1
-      const microFlicker = Math.sin(time * 15 + seed) > 0.9 ? -0.2 : 0
-      const flicker = 0.9 + slowWave + microFlicker
-      glowRef.current.emissiveIntensity = 4 * Math.max(0.5, flicker);
+      const flicker = Math.random() > 0.98 ? (0.7 + Math.random() * 0.3) : (0.95 + Math.sin(time * 10) * 0.05);
+      glowRef.current.emissiveIntensity = 4 * flicker;
     }
   })
 
