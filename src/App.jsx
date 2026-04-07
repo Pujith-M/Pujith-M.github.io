@@ -55,10 +55,18 @@ function TrackManager({ scrollOffset }) {
   const skillsData = useMemo(() => TIMELINE.filter(t => t.type === 'SKILLS'), [])
   const projectsData = useMemo(() => TIMELINE.filter(t => t.type === 'PROJECTS'), [])
 
+  // Fix 2: Reactive viewport state instead of render-path hardcoding
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   return (
     <Suspense fallback={<SceneLoader />}>
       {/* Hero is always at the start, Z = [0, -30] approx */}
-      {currentZ > -150 && <Hero3D isMobile={window.innerWidth < 768} />}
+      {currentZ > -150 && <Hero3D isMobile={isMobile} />}
 
       {/* Experience Track: Z = [-40, -370] */}
       {currentZ < 150 && currentZ > -650 && <ExperienceTrack startZ={TRACK_STARTS.EXPERIENCE} data={experienceData} />}
@@ -80,16 +88,29 @@ function KeyboardDrive() {
 
   useEffect(() => {
     const step = 180
-    const handleKeyDown = (e) => {
-      if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return
-      e.preventDefault()
-      const direction = e.key === 'ArrowDown' ? 1 : -1
+    
+    // Explicit scroll control abstraction
+    const advanceScroll = (direction) => {
       const target = scroll.el ?? scroll.fixed?.parentElement
       target?.scrollBy({ top: direction * step, behavior: 'smooth' })
     }
 
+    const handleKeyDown = (e) => {
+      if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return
+      e.preventDefault()
+      advanceScroll(e.key === 'ArrowDown' ? 1 : -1)
+    }
+
+    // Fix 3: Handle safe custom event for external CTA triggers instead of synthetic KeyEvents
+    const handleStartJourney = () => advanceScroll(1)
+
     window.addEventListener('keydown', handleKeyDown, { passive: false })
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    window.addEventListener('start-journey', handleStartJourney)
+    
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('start-journey', handleStartJourney)
+    }
   }, [scroll])
 
   return null
@@ -205,7 +226,8 @@ function App() {
             className="hero-cta hero-cta-secondary"
             onClick={() => {
               setHasInteracted(true)
-              window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown' }))
+              // Fix 3: Dispatch deterministic explicit flow event
+              window.dispatchEvent(new CustomEvent('start-journey'))
             }}
             type="button"
           >

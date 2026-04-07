@@ -6,8 +6,11 @@ export function Car({ trackLength = 400, ...props }) {
   const groupRef = useRef()
   const scroll = useScroll()
 
-  // Make the wheels spin based on distance traveled
-  const wheelRefs = [useRef(), useRef(), useRef(), useRef()]
+  // Explicitly declared refs for each wheel to satisfy strict hook linting
+  const wheelFL = useRef()
+  const wheelFR = useRef()
+  const wheelRL = useRef()
+  const wheelRR = useRef()
 
   useFrame(() => {
     if (groupRef.current && scroll) {
@@ -20,9 +23,11 @@ export function Car({ trackLength = 400, ...props }) {
       groupRef.current.position.y = Math.sin(currentScroll * 500) * 0.02
       
       // Rotate wheels smoothly as you drive down Z
-      wheelRefs.forEach(w => {
-        if(w.current) w.current.rotation.x = currentScroll * trackLength
-      })
+      const rotation = currentScroll * trackLength;
+      if (wheelFL.current) wheelFL.current.rotation.x = rotation;
+      if (wheelFR.current) wheelFR.current.rotation.x = rotation;
+      if (wheelRL.current) wheelRL.current.rotation.x = rotation;
+      if (wheelRR.current) wheelRR.current.rotation.x = rotation;
     }
   })
 
@@ -157,7 +162,7 @@ export function Car({ trackLength = 400, ...props }) {
       {/* Wheels */}
       {/* Front Left */}
       <group position={[-0.9, 0.4, 1.1]}>
-        <group ref={wheelRefs[0]}>
+        <group ref={wheelFL}>
           <mesh rotation={[0, 0, Math.PI / 2]}>
             <cylinderGeometry args={[0.4, 0.4, 0.25, 24]} />
             <meshStandardMaterial color={wheelColor} roughness={0.9} />
@@ -171,7 +176,7 @@ export function Car({ trackLength = 400, ...props }) {
 
       {/* Front Right */}
       <group position={[0.9, 0.4, 1.1]}>
-        <group ref={wheelRefs[1]}>
+        <group ref={wheelFR}>
           <mesh rotation={[0, 0, Math.PI / 2]}>
             <cylinderGeometry args={[0.4, 0.4, 0.25, 24]} />
             <meshStandardMaterial color={wheelColor} roughness={0.9} />
@@ -185,7 +190,7 @@ export function Car({ trackLength = 400, ...props }) {
 
       {/* Rear Left */}
       <group position={[-0.9, 0.4, -1.0]}>
-        <group ref={wheelRefs[2]}>
+        <group ref={wheelRL}>
           <mesh rotation={[0, 0, Math.PI / 2]}>
             <cylinderGeometry args={[0.4, 0.4, 0.25, 24]} />
             <meshStandardMaterial color={wheelColor} roughness={0.9} />
@@ -199,7 +204,7 @@ export function Car({ trackLength = 400, ...props }) {
 
       {/* Rear Right */}
       <group position={[0.9, 0.4, -1.0]}>
-        <group ref={wheelRefs[3]}>
+        <group ref={wheelRR}>
           <mesh rotation={[0, 0, Math.PI / 2]}>
             <cylinderGeometry args={[0.4, 0.4, 0.25, 24]} />
             <meshStandardMaterial color={wheelColor} roughness={0.9} />
