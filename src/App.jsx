@@ -8,6 +8,7 @@ import { Car } from './components/Car'
 import { Hero3D } from './components/Hero3D'
 import { CityChunk } from './components/CityEnvironment'
 import { TIMELINE } from './config/timeline' 
+import { COLORS } from './config/colors'
 // validateTimeline is now called in the worker
 
 // Total physical drive distance - Increased to 1200 based on validation audit
@@ -165,13 +166,13 @@ function App() {
   }, [])
 
   return (
-    <div style={{ width: '100vw', height: '100vh', background: '#030014', overflow: 'hidden' }} role="application" aria-label="Interactive portfolio drive">
+    <div style={{ width: '100vw', height: '100vh', background: COLORS.MIDNIGHT_BLUE, overflow: 'hidden' }} role="application" aria-label="Interactive portfolio drive">
       {showIntroLoader && (
         <div style={{
           position: 'absolute',
           inset: 0,
           zIndex: 20,
-          background: 'radial-gradient(circle at 50% 40%, rgba(30,41,59,0.45), rgba(3,0,20,0.95))',
+          background: `radial-gradient(circle at 50% 40%, ${COLORS.SLATE_900}, ${COLORS.MIDNIGHT_BLUE})`,
           display: 'grid',
           placeItems: 'center',
           pointerEvents: 'none'
@@ -179,8 +180,8 @@ function App() {
           <div style={{
             padding: '1rem 1.4rem',
             borderRadius: '14px',
-            border: '1px solid rgba(59,130,246,0.5)',
-            background: 'rgba(2,6,23,0.75)',
+            border: `1px solid ${COLORS.VIVID_CYAN}80`,
+            background: COLORS.SLATE_950,
             color: '#e2e8f0',
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
@@ -226,12 +227,12 @@ function App() {
       >
         {isDebugMode && <Perf position="top-left" />}
         {/* Atmosphere & Lighting */}
-        <color attach="background" args={['#030014']} />
-        <fog attach="fog" args={['#030014', 15, 60]} />
+        <color attach="background" args={[COLORS.MIDNIGHT_BLUE]} />
+        <fog attach="fog" args={[COLORS.MIDNIGHT_BLUE, 15, 60]} />
         
         <ambientLight intensity={1.5} />
         <Environment preset="city" />
-        <directionalLight position={[10, 30, 20]} intensity={3.5} color="#a78bfa" castShadow />
+        <directionalLight position={[10, 30, 20]} intensity={3.5} color={COLORS.ELECTRIC_PURPLE} castShadow />
         <BakeShadows />
         
         {/* Post Processing for Neon Glow */}
@@ -244,6 +245,7 @@ function App() {
             radius={isReducedMotion ? 0.22 : 0.3} 
           />
         </EffectComposer>
+
 
         {/* The Realistic City Background Rendered in Chunks for LOD/Culling */}
         {Array.from({ length: Math.ceil(TRACK_LENGTH / 200) }).map((_, i) => {

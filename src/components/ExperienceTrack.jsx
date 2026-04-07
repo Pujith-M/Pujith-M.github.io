@@ -1,24 +1,22 @@
-import { Html, Text } from '@react-three/drei'
+import { Text } from '@react-three/drei'
 import { HighwaySign } from './HighwaySign'
 import { LAYOUT } from '../config/layout'
 import { useLanes } from '../hooks/useLanes'
+import { COLORS } from '../config/colors'
 
-// Removed inline HighwaySign in favor of shared component
 // Individual Ad Billboard for each bullet point
 function AdBillboard({ position, text, role, side = "left" }) {
   const lanes = useLanes()
   const xOffset = side === "left" ? lanes.OFFROAD_LEFT : lanes.OFFROAD_RIGHT
   const finalPos = [position[0] + xOffset, position[1], position[2]]
-  const accentColor = side === "left" ? "#14b8a6" : "#3b82f6"
+  const accentColor = side === "left" ? COLORS.CYAN_GLOW : COLORS.CYBER_LIME
 
-  // Since text gets too long, we will use text wrapping.
-  // We'll give it a max width.
   return (
     <group position={finalPos} rotation={[0, side === "left" ? 0.3 : -0.3, 0]}>
-      {/* Title Label */}
+      {/* Role Label */}
       <Text 
         position={[0, 3.2, 0.1]} 
-        fontSize={0.4} 
+        fontSize={0.28} 
         color={accentColor}
         anchorX="center" 
       >
@@ -28,23 +26,34 @@ function AdBillboard({ position, text, role, side = "left" }) {
       {/* Premium Glass Billboard Backing in 3D */}
       <group position={[0, 1.2, 0]}>
         {/* Glass panel */}
-        <mesh position={[0, 0, -0.1]}>
-          <planeGeometry args={[6, 3]} />
-          <meshStandardMaterial color="#0f172a" transparent opacity={0.8} roughness={0.2} />
-        </mesh>
-        {/* Neon border */}
         <mesh position={[0, 0, -0.05]}>
-          <planeGeometry args={[6.2, 3.2]} />
-          <meshBasicMaterial color={accentColor} wireframe />
+          <planeGeometry args={[6, 3, 32, 32]} />
+          <meshStandardMaterial 
+            color={COLORS.SLATE_900} 
+            transparent 
+            opacity={0.8} 
+            roughness={0.05} 
+            metalness={0.2}
+          />
+        </mesh>
+        
+        {/* Subtle inner glow / border strip instead of wireframe */}
+        <mesh position={[0, 1.48, -0.02]}>
+          <planeGeometry args={[6, 0.04]} />
+          <meshStandardMaterial color={accentColor} emissive={accentColor} emissiveIntensity={3} />
+        </mesh>
+        <mesh position={[0, -1.48, -0.02]}>
+          <planeGeometry args={[6, 0.04]} />
+          <meshStandardMaterial color={accentColor} emissive={accentColor} emissiveIntensity={3} />
         </mesh>
 
         <Text 
-          position={[0, 0, 0]} 
-          fontSize={0.25} 
+          position={[0, 0, 0.05]} 
+          fontSize={0.24} 
           color="white" 
           anchorX="center" 
           anchorY="middle"
-          maxWidth={5.5}
+          maxWidth={5.4}
           textAlign="center"
         >
           {text}
@@ -53,12 +62,13 @@ function AdBillboard({ position, text, role, side = "left" }) {
       
       {/* Pillar */}
       <mesh position={[0, -2, -0.1]}>
-        <cylinderGeometry args={[0.1, 0.15, 4]} />
-        <meshStandardMaterial color="#1e293b" metalness={1} roughness={0.1} />
+        <cylinderGeometry args={[0.06, 0.1, 4]} />
+        <meshStandardMaterial color={COLORS.SLATE_700} metalness={0.9} roughness={0.1} />
       </mesh>
     </group>
   )
 }
+
 
 export function ExperienceTrack({ startZ = -20, data = [] }) {
   const experiences = data.length > 0 ? data : [
