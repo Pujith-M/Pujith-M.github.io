@@ -1,7 +1,10 @@
 import { Suspense, lazy, useEffect, useMemo, useState } from 'react'
 import * as THREE from 'three'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { ScrollControls, useScroll, Html, BakeShadows, Environment } from '@react-three/drei'
+import { ScrollControls, useScroll, Html, BakeShadows, Environment, useGLTF } from '@react-three/drei'
+
+// Configure Draco decoder path so useGLTF can decompress the optimized model
+useGLTF.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/')
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import { Perf } from 'r3f-perf'
 import { Car } from './components/Car'
@@ -262,7 +265,9 @@ function App() {
           <CameraFollow />
           
           <group position={[0,0,0]}>
-            <Car trackLength={TRACK_LENGTH} />
+            <Suspense fallback={<SceneLoader />}>
+              <Car trackLength={TRACK_LENGTH} />
+            </Suspense>
             
             {/* Tracks are now managed by TrackManager inside CameraFollow for culling */}
             
