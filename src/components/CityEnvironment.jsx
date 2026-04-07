@@ -1,5 +1,6 @@
 import React, { useRef, useMemo } from 'react'
 import { Instances, Instance } from '@react-three/drei'
+import { COLORS } from '../config/colors'
 
 export const CityChunk = React.memo(({ startZ, length, seed = 12345 }) => {
   // Generate deterministic buildings for this specific chunk
@@ -21,7 +22,7 @@ export const CityChunk = React.memo(({ startZ, length, seed = 12345 }) => {
       list.push({
         position: [-22 - random() * 30, h / 2, startZ - random() * length],
         scale: [w, h, d],
-        color: i % 2 === 0 ? "#0f172a" : "#020617",
+        color: i % 2 === 0 ? COLORS.SLATE_900 : COLORS.SLATE_950,
         windows: Array.from({ length: 6 }).map(() => ({
           pos: [ (random() - 0.5) * w, (random() - 0.5) * h, d / 2 + 0.05 ],
           size: [ 0.3 + random() * 0.5, 0.4 + random() * 0.8 ]
@@ -32,7 +33,7 @@ export const CityChunk = React.memo(({ startZ, length, seed = 12345 }) => {
       list.push({
         position: [22 + random() * 30, h / 2, startZ - random() * length],
         scale: [w, h, d],
-        color: i % 2 === 1 ? "#0f172a" : "#020617",
+        color: i % 2 === 1 ? COLORS.SLATE_900 : COLORS.SLATE_950,
         windows: Array.from({ length: 6 }).map(() => ({
           pos: [ (random() - 0.5) * w, (random() - 0.5) * h, -d / 2 - 0.05 ],
           size: [ 0.3 + random() * 0.5, 0.4 + random() * 0.8 ]
@@ -66,17 +67,17 @@ export const CityChunk = React.memo(({ startZ, length, seed = 12345 }) => {
       {/* Side Curbs / Sidewalks */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[-6.5, -0.005, startZ - length/2]}>
         <planeGeometry args={[1, length + 40]} />
-        <meshStandardMaterial color="#1e293b" />
+        <meshStandardMaterial color={COLORS.SLATE_800} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[6.5, -0.005, startZ - length/2]}>
         <planeGeometry args={[1, length + 40]} />
-        <meshStandardMaterial color="#1e293b" />
+        <meshStandardMaterial color={COLORS.SLATE_800} />
       </mesh>
       
       {/* The Lane lines */}
       <Instances limit={200} range={Math.floor(length / 10)}>
         <planeGeometry args={[0.2, 5]} />
-        <meshStandardMaterial color="#3b82f6" emissive="#3b82f6" emissiveIntensity={4} />
+        <meshStandardMaterial color={COLORS.VIVID_CYAN} emissive={COLORS.VIVID_CYAN} emissiveIntensity={4} />
         {Array.from({ length: Math.floor(length / 10) }).map((_, i) => (
           <Instance key={i} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, startZ - (i * 10)]} />
         ))}
@@ -91,19 +92,19 @@ export const CityChunk = React.memo(({ startZ, length, seed = 12345 }) => {
         ))}
       </Instances>
 
-      {/* Blue Windows */}
+      {/* Cyan Windows */}
       <Instances limit={1000}>
         <planeGeometry args={[1, 1]} />
-        <meshStandardMaterial color="#3b82f6" emissive="#3b82f6" emissiveIntensity={3} />
+        <meshStandardMaterial color={COLORS.VIVID_CYAN} emissive={COLORS.VIVID_CYAN} emissiveIntensity={3} />
         {buildings.filter((_, i) => i % 3 === 0).flatMap((b, i) => b.windows.map((win, j) => (
           <Instance key={`bw-${i}-${j}`} position={[b.position[0] + win.pos[0], b.position[1] + win.pos[1], b.position[2] + win.pos[2]]} scale={win.size} />
         )))}
       </Instances>
 
-      {/* Red Windows */}
+      {/* Purple Windows */}
       <Instances limit={1000}>
         <planeGeometry args={[1, 1]} />
-        <meshStandardMaterial color="#f43f5e" emissive="#f43f5e" emissiveIntensity={3} />
+        <meshStandardMaterial color={COLORS.ELECTRIC_PURPLE} emissive={COLORS.ELECTRIC_PURPLE} emissiveIntensity={3} />
         {buildings.filter((_, i) => i % 3 !== 0).flatMap((b, i) => b.windows.map((win, j) => (
           <Instance key={`rw-${i}-${j}`} position={[b.position[0] + win.pos[0], b.position[1] + win.pos[1], b.position[2] + win.pos[2]]} scale={win.size} />
         )))}

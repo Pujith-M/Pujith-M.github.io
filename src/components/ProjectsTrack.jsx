@@ -1,50 +1,89 @@
-import { Html, Text } from '@react-three/drei'
+import { Text } from '@react-three/drei'
 import { HighwaySign } from './HighwaySign'
 import { LAYOUT } from '../config/layout'
 import { useLanes } from '../hooks/useLanes'
+import { COLORS } from '../config/colors'
 
 function ProjectScreen({ position, name, tech, desc, rotationY }) {
+  const accent = COLORS.VIVID_CYAN
+
   return (
     <group position={position} rotation={[0, rotationY, 0]}>
-      {/* Holographic Frame */}
-      <mesh position={[0, 2.2, 0]}>
-        <boxGeometry args={[6.2, 4.2, 0.1]} />
-        <meshStandardMaterial color="#8b5cf6" emissive="#8b5cf6" emissiveIntensity={2} wireframe />
-      </mesh>
-      
-      {/* The Actual Content via 3D Text (Holographic look) */}
-      <group position={[0, 2.2, 0.06]}>
-        <mesh position={[0, 0, -0.02]}>
-          <planeGeometry args={[5.8, 3.8]} />
-          <meshStandardMaterial color="#0f172a" transparent opacity={0.8} />
+      {/* Project Card Content */}
+      <group position={[0, 2.2, 0]}>
+        {/* Glass Backing */}
+        <mesh position={[0, 0, -0.05]}>
+          <planeGeometry args={[6.2, 4.2, 32, 32]} />
+          <meshStandardMaterial 
+            color={COLORS.SLATE_900} 
+            transparent 
+            opacity={0.8} 
+            roughness={0.1}
+            metalness={0.2}
+          />
         </mesh>
         
-        <Text position={[0, 1.2, 0]} fontSize={0.7} color="white" anchorX="center" maxWidth={5} textAlign="center">
+        {/* Top/Bottom Glow Strips replacing wireframe */}
+        <mesh position={[0, 2.1, 0.02]}>
+          <planeGeometry args={[6.2, 0.05]} />
+          <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={4} />
+        </mesh>
+        <mesh position={[0, -2.1, 0.02]}>
+          <planeGeometry args={[6.2, 0.05]} />
+          <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={4} />
+        </mesh>
+        
+        <Text 
+          position={[0, 1.3, 0.1]} 
+          fontSize={0.65} 
+          color="white" 
+          anchorX="center" 
+          fontWeight={800}
+        >
           {name}
         </Text>
         
-        {/* Tech pill */}
-        <mesh position={[0, 0.3, 0]}>
-          <planeGeometry args={[3, 0.6]} />
-          <meshBasicMaterial color="#8b5cf6" transparent opacity={0.2} />
-        </mesh>
-        <Text position={[0, 0.3, 0.05]} fontSize={0.3} color="#8b5cf6" anchorX="center" anchorY="middle">
-          {tech}
-        </Text>
+        {/* Tech Badge */}
+        <group position={[0, 0.4, 0.1]}>
+          <mesh>
+            <planeGeometry args={[3.2, 0.5]} />
+            <meshBasicMaterial color={accent} transparent opacity={0.15} />
+          </mesh>
+          <mesh position={[0, -0.25, 0.01]}>
+            <planeGeometry args={[3.2, 0.04]} />
+            <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={4} />
+          </mesh>
+          <Text 
+            fontSize={0.24} 
+            color={accent} 
+            anchorX="center" 
+            anchorY="middle"
+          >
+            {tech.toUpperCase()}
+          </Text>
+        </group>
 
-        <Text position={[0, -0.8, 0]} fontSize={0.35} color="white" anchorX="center" maxWidth={5.2} textAlign="center" lineHeight={1.5}>
+        <Text 
+          position={[0, -0.7, 0.1]} 
+          fontSize={0.28} 
+          color={COLORS.SLATE_400} 
+          anchorX="center" 
+          maxWidth={5.4} 
+          textAlign="center" 
+          lineHeight={1.4}
+        >
           {desc}
         </Text>
       </group>
 
-      {/* Stand with Glow */}
-      <mesh position={[0, -0.5, 0]}>
-        <cylinderGeometry args={[0.05, 0.15, 3]} />
-        <meshStandardMaterial color="#1e293b" />
+      {/* Stand */}
+      <mesh position={[0, -0.5, -0.1]}>
+        <cylinderGeometry args={[0.04, 0.08, 3]} />
+        <meshStandardMaterial color={COLORS.SLATE_700} metalness={0.9} roughness={0.1} />
       </mesh>
-      <mesh position={[0, -1.9, 0]}>
-         <sphereGeometry args={[0.5, 16, 16]} />
-         <meshStandardMaterial color="#8b5cf6" emissive="#8b5cf6" emissiveIntensity={5} />
+      <mesh position={[0, -1.9, -0.1]}>
+         <sphereGeometry args={[0.4, 32, 32]} />
+         <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={8} />
       </mesh>
     </group>
   )
