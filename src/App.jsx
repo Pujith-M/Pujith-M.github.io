@@ -86,7 +86,7 @@ function KeyboardDrive() {
     const handleKeyDown = (e) => {
       if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return
       e.preventDefault()
-      const direction = e.key === 'ArrowDown' ? 1 : -1
+      const direction = e.key === 'ArrowUp' ? 1 : -1
       const target = scroll.el ?? scroll.fixed?.parentElement
       target?.scrollBy({ top: direction * step, behavior: 'smooth' })
     }
@@ -234,7 +234,7 @@ function App() {
             className="hero-cta hero-cta-secondary"
             onClick={() => {
               setHasInteracted(true)
-              window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown' }))
+              window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp' }))
             }}
             type="button"
           >
