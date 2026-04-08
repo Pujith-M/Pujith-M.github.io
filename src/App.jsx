@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useMemo, useState } from 'react'
+import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { ScrollControls, useScroll, Html, BakeShadows, Environment, useGLTF } from '@react-three/drei'
@@ -98,30 +98,56 @@ function KeyboardDrive() {
   return null
 }
 
-// A wrapper component to make the camera follow the car
+// ─── GTA V Far Chase Camera ───────────────────────────────────────────────
+// Spring-arm lerp for position + direct lookAt (reliable, no gimbal issues)
+// Dynamic FOV expands when scrolling faster for a speed-rush feel.
+const BASE_FOV      = 58    // resting FOV in degrees
+const ARM_HEIGHT    = 4.5   // camera height above car
+const ARM_DISTANCE  = 12.0  // camera distance behind car (+Z in our scene)
+const LOOK_AHEAD_Z  = 8.0   // metres ahead of car the camera targets
+const LOOK_AHEAD_Y  = 1.2   // look-at height (bonnet + road visible)
+const POS_SPEED     = 5     // position lerp speed
+const FOV_SPEED     = 3     // FOV lerp speed
+const MAX_FOV_BOOST = 10    // max extra degrees at full scroll speed
+const MAX_ARM_BOOST = 2.5   // extra pull-back distance at full speed
+
 function CameraFollow() {
   const scroll = useScroll()
-  
-  // We use a persistent Vector3 to avoid creating objects in the render loop
-  const targetVec = new THREE.Vector3()
+
+  // Pre-allocated to avoid GC pressure in the render loop
+  const camPosTarget = useRef(new THREE.Vector3())
+  const prevOffset   = useRef(0)
+  const smoothVel    = useRef(0)
 
   useFrame((state, delta) => {
-    const currentScroll = scroll.offset
-    const targetZ = -currentScroll * TRACK_LENGTH
-    
-    // Elevated and pulled-back POV for better road & sign visibility
-    targetVec.set(0, 3.6, targetZ + 7.2)
-    
-    // Framerate-independent smoothing
-    const lerpFactor = 1 - Math.exp(-5 * delta)
-    state.camera.position.lerp(targetVec, lerpFactor)
-    
-    // Look ahead of the car, explicitly elevated to ensure tall highway signs stay safely in-frame bounds
-    state.camera.lookAt(0, 4.4, targetZ - 22)
+    const t    = scroll.offset
+    const carZ = -t * TRACK_LENGTH
+
+    // ── 1. Velocity tracking ──────────────────────────────────────────────
+    const rawVel = (t - prevOffset.current) / Math.max(delta, 0.001)
+    prevOffset.current = t
+    smoothVel.current += (Math.abs(rawVel) - smoothVel.current) * (1 - Math.exp(-8 * delta))
+    const speed = Math.min(smoothVel.current * TRACK_LENGTH, 1) // 0–1
+
+    // ── 2. Dynamic FOV & arm extension ───────────────────────────────────
+    const targetFOV   = BASE_FOV + speed * MAX_FOV_BOOST
+    const dynDistance = ARM_DISTANCE + speed * MAX_ARM_BOOST
+    state.camera.fov += (targetFOV - state.camera.fov) * (1 - Math.exp(-FOV_SPEED * delta))
+    state.camera.updateProjectionMatrix()
+
+    // ── 3. Spring-arm position lerp ───────────────────────────────────────
+    // Camera sits BEHIND the car (+Z) and above it (+Y)
+    camPosTarget.current.set(0, ARM_HEIGHT, carZ + dynDistance)
+    state.camera.position.lerp(camPosTarget.current, 1 - Math.exp(-POS_SPEED * delta))
+
+    // ── 4. Look-at — always point toward a spot ahead of the car ─────────
+    // carZ - LOOK_AHEAD_Z is in front of the car (more negative Z = forward)
+    state.camera.lookAt(0, LOOK_AHEAD_Y, carZ - LOOK_AHEAD_Z)
   })
-  
+
   return <TrackManager scrollOffset={scroll.offset} />
 }
+
 
 function App() {
   const [showIntroLoader, setShowIntroLoader] = useState(true)
@@ -224,7 +250,7 @@ function App() {
         shadows 
         frameloop="demand"
         dpr={[1, 2]}
-        camera={{ position: [0, 5, 13], fov: 58, near: 0.5, far: 800 }}
+        camera={{ position: [0, ARM_HEIGHT, ARM_DISTANCE], fov: BASE_FOV, near: 0.5, far: 800 }}
         gl={{ antialias: false, stencil: false, powerPreference: 'high-performance' }}
         onCreated={() => setSceneReady(true)}
       >
