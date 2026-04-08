@@ -115,6 +115,13 @@ function KeyboardDrive() {
   }, [invalidate])
 
   useFrame((_state, delta) => {
+    // ── 0. Clamp delta ───────────────────────────────────────────────────
+    // frameloop="demand" keeps the R3F clock ticking while sleeping.
+    // The first frame after wake-up has delta = total idle time (e.g. 5s).
+    // Without clamping, velocity × delta would teleport the car across the
+    // whole track in a single frame. Cap to 50ms (≡ 20fps minimum).
+    const dt = Math.min(delta, 0.05)
+
     // ── 1. Sample input ─────────────────────────────────────────────────
     let input = 0
     if (keys.has(ACTIONS.MOVE_FORWARD))  input += 1
@@ -124,8 +131,9 @@ function KeyboardDrive() {
     const targetVel  = input * DRIVE_MAX_SPEED
     const dampFactor = input !== 0 ? DRIVE_ACCEL : DRIVE_DECEL
     velocity.current = THREE.MathUtils.damp(
-      velocity.current, targetVel, dampFactor, delta
+      velocity.current, targetVel, dampFactor, dt
     )
+
 
     // Dead-zone — fully stop to avoid fp jitter
     if (Math.abs(velocity.current) < VELOCITY_EPSILON && input === 0) {
@@ -136,7 +144,7 @@ function KeyboardDrive() {
     if (velocity.current !== 0) {
       const target = scroll.el || scroll.fixed?.parentElement
       if (target) {
-        target.scrollTop += velocity.current * delta
+        target.scrollTop += velocity.current * dt
 
         // Wake interaction listener (hides overlay, signals first movement)
         if (!hasWoken.current && velocity.current > 0) {
