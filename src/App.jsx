@@ -1,7 +1,7 @@
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react'
-import { useKeyboard, ACTIONS } from './hooks/useKeyboard'
+import { useKeyboard, ACTIONS, KEY_MAP } from './hooks/useKeyboard'
 import * as THREE from 'three'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { ScrollControls, useScroll, Html, BakeShadows, Environment, useGLTF } from '@react-three/drei'
 
 // Configure Draco decoder path so useGLTF can decompress the optimized model
@@ -79,18 +79,40 @@ function TrackManager({ scrollOffset }) {
   )
 }
 
-// ─── State-Driven Input Controller ────────────────────────────────────────
-// Reads shared useKeyboard state on every frame — no event listeners here.
-// Velocity is lerped for smooth acceleration/deceleration (inertia feel).
-const DRIVE_MAX_SPEED  = 1800  // px/s at full throttle
-const DRIVE_ACCEL      = 7     // lerp factor when accelerating
-const DRIVE_DECEL      = 12    // lerp factor when coasting to stop
+// ─── Wake-on-Input: Ignition + Sustain System ──────────────────────────────────
+//
+// Problem:  frameloop="demand" sleeps until something calls invalidate().
+//           Keyboard events alone don’t wake R3F — only scroll does.
+//
+// Solution: Two-phase wake strategy:
+//   ① IGNITION  — useEffect keydown listener calls invalidate() immediately,
+//                  starting the first frame the moment a driving key is pressed.
+//   ② SUSTAIN   — inside useFrame, keep calling invalidate() while velocity
+//                  is above threshold, so the loop stays alive during
+//                  acceleration and coasting (not just while key is held).
+//
+// Future-proof: KEY_MAP and ACTIONS are abstract. To add a Fighter Jet,
+//  change only the consumer’s useFrame logic — not this input layer.
+const DRIVE_MAX_SPEED = 1800  // px/s at full throttle
+const DRIVE_ACCEL     = 7     // damp factor when accelerating
+const DRIVE_DECEL     = 10    // damp factor when coasting to stop
+const VELOCITY_EPSILON = 0.5  // dead-zone – stop jitter
 
 function KeyboardDrive() {
   const scroll   = useScroll()
   const keys     = useKeyboard()
-  const velocity = useRef(0)       // persistent velocity — px/s, signed
-  const hasWoken = useRef(false)   // track if we've fired the wake-up event
+  const { invalidate } = useThree()
+  const velocity = useRef(0)
+  const hasWoken = useRef(false)
+
+  // ① IGNITION — wake the sleeping frame loop the moment a driving key fires
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (KEY_MAP[e.code] || KEY_MAP[e.key]) invalidate()
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [invalidate])
 
   useFrame((_state, delta) => {
     // ── 1. Sample input ─────────────────────────────────────────────────
@@ -98,29 +120,36 @@ function KeyboardDrive() {
     if (keys.has(ACTIONS.MOVE_FORWARD))  input += 1
     if (keys.has(ACTIONS.MOVE_BACKWARD)) input -= 1
 
-    // ── 2. Velocity with inertia ─────────────────────────────────────────
+    // ── 2. Velocity with smooth damping (inertia / weight) ───────────────
     const targetVel  = input * DRIVE_MAX_SPEED
-    const lerpFactor = input !== 0 ? DRIVE_ACCEL : DRIVE_DECEL
-    velocity.current += (targetVel - velocity.current) * (1 - Math.exp(-lerpFactor * delta))
+    const dampFactor = input !== 0 ? DRIVE_ACCEL : DRIVE_DECEL
+    velocity.current = THREE.MathUtils.damp(
+      velocity.current, targetVel, dampFactor, delta
+    )
 
-    // Dead-zone — stop jitter when nearly still
-    if (Math.abs(velocity.current) < 0.5 && input === 0) {
+    // Dead-zone — fully stop to avoid fp jitter
+    if (Math.abs(velocity.current) < VELOCITY_EPSILON && input === 0) {
       velocity.current = 0
-      return
     }
 
-    // ── 3. Apply to scroll container ────────────────────────────────────
-    const target = scroll.el || scroll.fixed?.parentElement
-    if (!target) return
+    // ── 3. Apply to scroll container ─────────────────────────────────
+    if (velocity.current !== 0) {
+      const target = scroll.el || scroll.fixed?.parentElement
+      if (target) {
+        target.scrollTop += velocity.current * delta
 
-    target.scrollTop += velocity.current * delta
+        // Wake interaction listener (hides overlay, signals first movement)
+        if (!hasWoken.current && velocity.current > 0) {
+          hasWoken.current = true
+          window.dispatchEvent(new Event('wheel'))
+        }
+      }
+    }
 
-    // ── 4. Wake-up: fire a synthetic wheel event the very first time we
-    //    move so the App's interaction listener (overlay hide) triggers
-    //    and ScrollControls' damping wakes from rest. ───────────────────
-    if (!hasWoken.current && velocity.current > 0) {
-      hasWoken.current = true
-      window.dispatchEvent(new Event('wheel'))
+    // ② SUSTAIN — keep the frame loop alive while the car is in motion
+    // or a key is still held. Loop naturally goes idle once velocity hits 0.
+    if (input !== 0 || Math.abs(velocity.current) > VELOCITY_EPSILON) {
+      invalidate()
     }
   })
 
