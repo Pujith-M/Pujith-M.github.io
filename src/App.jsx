@@ -1,4 +1,5 @@
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react'
+import { useKeyboard, ACTIONS } from './hooks/useKeyboard'
 import * as THREE from 'three'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { ScrollControls, useScroll, Html, BakeShadows, Environment, useGLTF } from '@react-three/drei'
@@ -78,22 +79,50 @@ function TrackManager({ scrollOffset }) {
   )
 }
 
-function KeyboardDrive() {
-  const scroll = useScroll()
+// ─── State-Driven Input Controller ────────────────────────────────────────
+// Reads shared useKeyboard state on every frame — no event listeners here.
+// Velocity is lerped for smooth acceleration/deceleration (inertia feel).
+const DRIVE_MAX_SPEED  = 1800  // px/s at full throttle
+const DRIVE_ACCEL      = 7     // lerp factor when accelerating
+const DRIVE_DECEL      = 12    // lerp factor when coasting to stop
 
-  useEffect(() => {
-    const step = 180
-    const handleKeyDown = (e) => {
-      if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return
-      e.preventDefault()
-      const direction = e.key === 'ArrowUp' ? 1 : -1
-      const target = scroll.el ?? scroll.fixed?.parentElement
-      target?.scrollBy({ top: direction * step, behavior: 'smooth' })
+function KeyboardDrive() {
+  const scroll   = useScroll()
+  const keys     = useKeyboard()
+  const velocity = useRef(0)       // persistent velocity — px/s, signed
+  const hasWoken = useRef(false)   // track if we've fired the wake-up event
+
+  useFrame((_state, delta) => {
+    // ── 1. Sample input ─────────────────────────────────────────────────
+    let input = 0
+    if (keys.has(ACTIONS.MOVE_FORWARD))  input += 1
+    if (keys.has(ACTIONS.MOVE_BACKWARD)) input -= 1
+
+    // ── 2. Velocity with inertia ─────────────────────────────────────────
+    const targetVel  = input * DRIVE_MAX_SPEED
+    const lerpFactor = input !== 0 ? DRIVE_ACCEL : DRIVE_DECEL
+    velocity.current += (targetVel - velocity.current) * (1 - Math.exp(-lerpFactor * delta))
+
+    // Dead-zone — stop jitter when nearly still
+    if (Math.abs(velocity.current) < 0.5 && input === 0) {
+      velocity.current = 0
+      return
     }
 
-    window.addEventListener('keydown', handleKeyDown, { passive: false })
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [scroll])
+    // ── 3. Apply to scroll container ────────────────────────────────────
+    const target = scroll.el || scroll.fixed?.parentElement
+    if (!target) return
+
+    target.scrollTop += velocity.current * delta
+
+    // ── 4. Wake-up: fire a synthetic wheel event the very first time we
+    //    move so the App's interaction listener (overlay hide) triggers
+    //    and ScrollControls' damping wakes from rest. ───────────────────
+    if (!hasWoken.current && velocity.current > 0) {
+      hasWoken.current = true
+      window.dispatchEvent(new Event('wheel'))
+    }
+  })
 
   return null
 }
