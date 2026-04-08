@@ -283,6 +283,45 @@ function CameraFollow() {
 }
 
 
+function MovingLight() {
+  const scroll = useScroll()
+  const lightRef = useRef()
+  const targetRef = useRef()
+
+  useFrame(() => {
+    if (!lightRef.current || !targetRef.current || !scroll) return
+    const carZ = -scroll.offset * TRACK_LENGTH
+    
+    // Position light more vertically and slightly behind to keep shadow visible under/ahead
+    lightRef.current.position.set(10, 50, carZ + 5)
+    // Position target at car's exact location
+    targetRef.current.position.set(0, 0, carZ)
+    
+    // Explicitly link target
+    lightRef.current.target = targetRef.current
+  })
+
+  return (
+    <>
+      <group ref={targetRef} />
+      <directionalLight 
+        ref={lightRef}
+        intensity={3.5} 
+        color={COLORS.ELECTRIC_PURPLE} 
+        castShadow 
+        shadow-mapSize={[2048, 2048]}
+        shadow-camera-left={-30}
+        shadow-camera-right={30}
+        shadow-camera-top={30}
+        shadow-camera-bottom={-30}
+        shadow-camera-near={0.5}
+        shadow-camera-far={120}
+        shadow-bias={-0.0001}
+      />
+    </>
+  )
+}
+
 function App() {
   const [showIntroLoader, setShowIntroLoader] = useState(true)
   const [sceneReady, setSceneReady] = useState(false)
@@ -395,8 +434,6 @@ function App() {
         
         <ambientLight intensity={1.5} />
         <Environment preset="city" />
-        <directionalLight position={[10, 30, 20]} intensity={3.5} color={COLORS.ELECTRIC_PURPLE} castShadow />
-        <BakeShadows />
         
         {/* Post Processing for Neon Glow */}
         <EffectComposer disableNormalPass multisampling={0}>
@@ -423,6 +460,7 @@ function App() {
         <ScrollControls pages={50} damping={0.15}>
           <KeyboardDrive />
           <CameraFollow />
+          <MovingLight />
           
           <group position={[0,0,0]}>
             <Suspense fallback={<SceneLoader />}>
