@@ -1,10 +1,12 @@
 import { Text } from '@react-three/drei'
 import React, { useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
+import { useFrame, useThree } from '@react-three/fiber'
 import { COLORS } from '../config/colors'
 
 export const HighwaySign = React.memo(({ position, title, subtext, color = COLORS.VIVID_CYAN }) => {
   const glowRef = useRef()
+  const signRef = useRef()
+  const { camera } = useThree()
   
   // Subtle Neon Flicker
   useFrame((state) => {
@@ -13,10 +15,17 @@ export const HighwaySign = React.memo(({ position, title, subtext, color = COLOR
       const flicker = Math.random() > 0.98 ? (0.7 + Math.random() * 0.3) : (0.95 + Math.sin(time * 10) * 0.05);
       glowRef.current.emissiveIntensity = 4 * flicker;
     }
+
+    // Billboard yaw only: ads stay upright and readable while always facing camera.
+    if (signRef.current) {
+      const dx = camera.position.x - signRef.current.position.x
+      const dz = camera.position.z - signRef.current.position.z
+      signRef.current.rotation.y = Math.atan2(dx, dz)
+    }
   })
 
   return (
-    <group position={position}>
+    <group ref={signRef} position={position}>
       {/* Pillars with metallic finish */}
       <mesh position={[-6.2, 4, 0]}>
         <cylinderGeometry args={[0.08, 0.12, 8]} />
@@ -90,4 +99,3 @@ export const HighwaySign = React.memo(({ position, title, subtext, color = COLOR
     </group>
   )
 })
-

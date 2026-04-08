@@ -176,6 +176,9 @@ const POS_SPEED     = 5     // position lerp speed
 const FOV_SPEED     = 3     // FOV lerp speed
 const MAX_FOV_BOOST = 10    // max extra degrees at full scroll speed
 const MAX_ARM_BOOST = 2.5   // extra pull-back distance at full speed
+const REVERSE_THRESHOLD = -0.0015 // signed scroll velocity to trigger reverse view
+const FORWARD_THRESHOLD = 0.0008  // hysteresis to return to normal chase view
+const ORBIT_SPEED = 4.2           // how quickly camera flips toward reverse angle
 
 function CameraFollow() {
   const scroll = useScroll()
@@ -183,7 +186,10 @@ function CameraFollow() {
   // Pre-allocated to avoid GC pressure in the render loop
   const camPosTarget = useRef(new THREE.Vector3())
   const prevOffset   = useRef(0)
-  const smoothVel    = useRef(0)
+  const smoothVelAbs = useRef(0)
+  const smoothVelSigned = useRef(0)
+  const orbitAngle = useRef(0)
+  const isReverseView = useRef(false)
 
   useFrame((state, delta) => {
     const t    = scroll.offset
@@ -192,8 +198,19 @@ function CameraFollow() {
     // ── 1. Velocity tracking ──────────────────────────────────────────────
     const rawVel = (t - prevOffset.current) / Math.max(delta, 0.001)
     prevOffset.current = t
-    smoothVel.current += (Math.abs(rawVel) - smoothVel.current) * (1 - Math.exp(-8 * delta))
-    const speed = Math.min(smoothVel.current * TRACK_LENGTH, 1) // 0–1
+    const velocityLerp = 1 - Math.exp(-8 * delta)
+    smoothVelSigned.current += (rawVel - smoothVelSigned.current) * velocityLerp
+    smoothVelAbs.current += (Math.abs(rawVel) - smoothVelAbs.current) * velocityLerp
+    const speed = Math.min(smoothVelAbs.current * TRACK_LENGTH, 1) // 0–1
+
+    if (!isReverseView.current && smoothVelSigned.current < REVERSE_THRESHOLD) {
+      isReverseView.current = true
+    } else if (isReverseView.current && smoothVelSigned.current > FORWARD_THRESHOLD) {
+      isReverseView.current = false
+    }
+
+    const targetAngle = isReverseView.current ? Math.PI : 0
+    orbitAngle.current = THREE.MathUtils.damp(orbitAngle.current, targetAngle, ORBIT_SPEED, delta)
 
     // ── 2. Dynamic FOV & arm extension ───────────────────────────────────
     const targetFOV   = BASE_FOV + speed * MAX_FOV_BOOST
@@ -203,7 +220,9 @@ function CameraFollow() {
 
     // ── 3. Spring-arm position lerp ───────────────────────────────────────
     // Camera sits BEHIND the car (+Z) and above it (+Y)
-    camPosTarget.current.set(0, ARM_HEIGHT, carZ + dynDistance)
+    const orbitX = Math.sin(orbitAngle.current) * dynDistance
+    const orbitZ = Math.cos(orbitAngle.current) * dynDistance
+    camPosTarget.current.set(orbitX, ARM_HEIGHT, carZ + orbitZ)
     state.camera.position.lerp(camPosTarget.current, 1 - Math.exp(-POS_SPEED * delta))
 
     // ── 4. Look-at — always point toward a spot ahead of the car ─────────
