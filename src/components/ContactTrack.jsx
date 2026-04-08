@@ -1,6 +1,7 @@
 import { Html, Text } from '@react-three/drei'
 import { FaEnvelope, FaPhone, FaLink } from 'react-icons/fa'
 import { HighwaySign } from './HighwaySign'
+import { SmartBillboard } from './SmartBillboard'
 import { LAYOUT } from '../config/layout'
 
 export function ContactTrack({ startZ }) {
@@ -15,7 +16,7 @@ export function ContactTrack({ startZ }) {
       />
 
       {/* 3D Contact Billboard */}
-      <group position={[0, 1.5, 4]}>
+      <SmartBillboard position={[0, 1.5, 4]}>
         <mesh position={[0, 0, -0.05]}>
           <planeGeometry args={[8, 5]} />
           <meshStandardMaterial color="#0f172a" transparent opacity={0.8} />
@@ -49,7 +50,7 @@ export function ContactTrack({ startZ }) {
         <Text position={[0, -2.15, 0.05]} fontSize={0.25} color="white" anchorX="center" anchorY="middle">
           Computer Science Engineering | 2014-2018
         </Text>
-      </group>
+      </SmartBillboard>
       
       {/* Visual Terminal Portal */}
       <mesh position={[0, 5, -5]}>

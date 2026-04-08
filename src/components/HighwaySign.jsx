@@ -2,6 +2,7 @@ import { Text } from '@react-three/drei'
 import React, { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { COLORS } from '../config/colors'
+import { SmartBillboard } from './SmartBillboard'
 
 export const HighwaySign = React.memo(({ position, title, subtext, color = COLORS.VIVID_CYAN }) => {
   const glowRef = useRef()
@@ -16,7 +17,7 @@ export const HighwaySign = React.memo(({ position, title, subtext, color = COLOR
   })
 
   return (
-    <group position={position}>
+    <SmartBillboard position={position}>
       {/* Pillars with metallic finish */}
       <mesh position={[-6.2, 4, 0]}>
         <cylinderGeometry args={[0.08, 0.12, 8]} />
@@ -87,7 +88,7 @@ export const HighwaySign = React.memo(({ position, title, subtext, color = COLOR
       >
         {subtext}
       </Text>
-    </group>
+    </SmartBillboard>
   )
 })
 

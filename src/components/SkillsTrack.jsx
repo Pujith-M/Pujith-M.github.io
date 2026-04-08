@@ -1,12 +1,13 @@
 import { Text, Float } from '@react-three/drei'
 import { HighwaySign } from './HighwaySign'
+import { SmartBillboard } from './SmartBillboard'
 import { LAYOUT } from '../config/layout'
 import { useLanes } from '../hooks/useLanes'
 import { COLORS } from '../config/colors'
 
 function SkillNode({ position, title, items, color }) {
   return (
-    <group position={position}>
+    <SmartBillboard position={position}>
       {/* Professional Geometric Core replaces wireframe */}
       <Float speed={4} rotationIntensity={1.5} floatIntensity={0.8}>
         <mesh position={[0, 0, 0]}>
@@ -64,7 +65,7 @@ function SkillNode({ position, title, items, color }) {
           </Text>
         ))}
       </group>
-    </group>
+    </SmartBillboard>
   )
 }
 

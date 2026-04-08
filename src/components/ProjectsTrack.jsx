@@ -3,12 +3,13 @@ import { HighwaySign } from './HighwaySign'
 import { LAYOUT } from '../config/layout'
 import { useLanes } from '../hooks/useLanes'
 import { COLORS } from '../config/colors'
+import { SmartBillboard } from './SmartBillboard'
 
-function ProjectScreen({ position, name, tech, desc, rotationY }) {
+function ProjectScreen({ position, name, tech, desc }) {
   const accent = COLORS.VIVID_CYAN
 
   return (
-    <group position={position} rotation={[0, rotationY, 0]}>
+    <SmartBillboard position={position}>
       {/* Project Card Content */}
       <group position={[0, 2.2, 0]}>
         {/* Glass Backing */}
@@ -85,7 +86,7 @@ function ProjectScreen({ position, name, tech, desc, rotationY }) {
          <sphereGeometry args={[0.4, 32, 32]} />
          <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={8} />
       </mesh>
-    </group>
+    </SmartBillboard>
   )
 }
 
@@ -125,7 +126,6 @@ export function ProjectsTrack({ startZ, data = [] }) {
           name={proj.name}
           tech={proj.tech}
           desc={proj.desc}
-          rotationY={i % 2 === 0 ? -0.2 : 0.2}
         />
       ))}
       

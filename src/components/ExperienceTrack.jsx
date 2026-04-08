@@ -3,6 +3,7 @@ import { HighwaySign } from './HighwaySign'
 import { LAYOUT } from '../config/layout'
 import { useLanes } from '../hooks/useLanes'
 import { COLORS } from '../config/colors'
+import { SmartBillboard } from './SmartBillboard'
 
 // Individual Ad Billboard for each bullet point
 function AdBillboard({ position, text, role, side = "left" }) {
@@ -12,7 +13,7 @@ function AdBillboard({ position, text, role, side = "left" }) {
   const accentColor = side === "left" ? COLORS.CYAN_GLOW : COLORS.CYBER_LIME
 
   return (
-    <group position={finalPos} rotation={[0, side === "left" ? 0.3 : -0.3, 0]}>
+    <SmartBillboard position={finalPos} rotation={[0, side === "left" ? 0.3 : -0.3, 0]}>
       {/* Role Label */}
       <Text 
         position={[0, 3.2, 0.1]} 
@@ -65,7 +66,7 @@ function AdBillboard({ position, text, role, side = "left" }) {
         <cylinderGeometry args={[0.06, 0.1, 4]} />
         <meshStandardMaterial color={COLORS.SLATE_700} metalness={0.9} roughness={0.1} />
       </mesh>
-    </group>
+    </SmartBillboard>
   )
 }
 

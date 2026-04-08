@@ -169,13 +169,18 @@ function KeyboardDrive() {
 // Dynamic FOV expands when scrolling faster for a speed-rush feel.
 const BASE_FOV      = 58    // resting FOV in degrees
 const ARM_HEIGHT    = 4.5   // camera height above car
-const ARM_DISTANCE  = 12.0  // camera distance behind car (+Z in our scene)
-const LOOK_AHEAD_Z  = 8.0   // metres ahead of car the camera targets
+const ARM_DISTANCE  = 12.0  // camera distance behind car
+const LOOK_AHEAD_BASE = 8.0   // base metres ahead of car the camera targets
+const LOOK_AHEAD_MAX  = 16.0  // max look-ahead at full speed
 const LOOK_AHEAD_Y  = 1.2   // look-at height (bonnet + road visible)
-const POS_SPEED     = 5     // position lerp speed
-const FOV_SPEED     = 3     // FOV lerp speed
-const MAX_FOV_BOOST = 10    // max extra degrees at full scroll speed
-const MAX_ARM_BOOST = 2.5   // extra pull-back distance at full speed
+const POS_DAMP      = 4.5   // position damp factor (lower = smoother)
+const FOV_DAMP      = 1.8   // FOV damp factor (slower for "air resistance" feel)
+const MAX_FOV_BOOST = 12    // max extra degrees at full speed
+const MAX_ARM_BOOST = 3.5   // extra pull-back distance at full speed
+const MAX_VEL_UNITS_PS = 50.0 // Velocity normalization anchor (units/sec)
+const COMMIT_THRESHOLD = 0.15 // 15% speed needed to flip camera
+const CAMERA_STIFFNESS = 1.5  // Damping stiffness for rotation
+const SHAKE_INTENSITY  = 0.04 // Intensity of high-speed rumble
 
 function CameraFollow() {
   const scroll = useScroll()
@@ -184,31 +189,94 @@ function CameraFollow() {
   const camPosTarget = useRef(new THREE.Vector3())
   const prevOffset   = useRef(0)
   const smoothVel    = useRef(0)
+  const cameraRotationAngle = useRef(0)
+  const targetAngleRef = useRef(0)
+  const directionRef = useRef('FORWARD') // 'FORWARD' or 'BACKWARD'
+  const isInitialized = useRef(false)
 
   useFrame((state, delta) => {
     const t    = scroll.offset
     const carZ = -t * TRACK_LENGTH
 
-    // ── 1. Velocity tracking ──────────────────────────────────────────────
-    const rawVel = (t - prevOffset.current) / Math.max(delta, 0.001)
-    prevOffset.current = t
-    smoothVel.current += (Math.abs(rawVel) - smoothVel.current) * (1 - Math.exp(-8 * delta))
-    const speed = Math.min(smoothVel.current * TRACK_LENGTH, 1) // 0–1
+    // ── 0. Initialization ────────────────────────────────────────────────
+    if (!isInitialized.current) {
+      prevOffset.current = t
+      isInitialized.current = true
+      return
+    }
 
-    // ── 2. Dynamic FOV & arm extension ───────────────────────────────────
-    const targetFOV   = BASE_FOV + speed * MAX_FOV_BOOST
-    const dynDistance = ARM_DISTANCE + speed * MAX_ARM_BOOST
-    state.camera.fov += (targetFOV - state.camera.fov) * (1 - Math.exp(-FOV_SPEED * delta))
+    // ── 1. Velocity tracking ──────────────────────────────────────────────
+    const dt = Math.max(delta, 0.001)
+    const rawVel = (t - prevOffset.current) / dt
+    prevOffset.current = t
+    
+    // Smooth the velocity signal
+    smoothVel.current = THREE.MathUtils.damp(
+      smoothVel.current, rawVel, 8, dt
+    )
+
+    // Normalize velocity (-1 to 1)
+    const normVel = (smoothVel.current * TRACK_LENGTH) / MAX_VEL_UNITS_PS
+    const speed = Math.min(Math.abs(normVel), 1)
+    const speedEased = speed * speed * (3 - 2 * speed)
+
+    // ── 2. Hysteresis State Machine (Commit Zone) ─────────────────────────
+    if (normVel > COMMIT_THRESHOLD && directionRef.current !== 'FORWARD') {
+      directionRef.current = 'FORWARD'
+      // Rotate to the next even multiple of PI (completing the circle)
+      targetAngleRef.current = Math.round(targetAngleRef.current / (Math.PI * 2)) * (Math.PI * 2)
+    } 
+    else if (normVel < -COMMIT_THRESHOLD && directionRef.current !== 'BACKWARD') {
+      directionRef.current = 'BACKWARD'
+      // Rotate to the next odd multiple of PI (the half-way point)
+      targetAngleRef.current = Math.floor(targetAngleRef.current / Math.PI) * Math.PI + Math.PI
+    }
+
+    // ── 3. Smooth Damping for "Heavy" Cinematic Rotation ──────────────────
+    cameraRotationAngle.current = THREE.MathUtils.damp(
+      cameraRotationAngle.current,
+      targetAngleRef.current,
+      CAMERA_STIFFNESS,
+      dt
+    )
+
+    // ── 4. Dynamic FOV & Arm Extension ───────────────────────────────────
+    const targetFOV   = BASE_FOV + speedEased * MAX_FOV_BOOST
+    const dynDistance = ARM_DISTANCE + speedEased * MAX_ARM_BOOST
+    
+    state.camera.fov = THREE.MathUtils.damp(
+      state.camera.fov, targetFOV, FOV_DAMP, dt
+    )
     state.camera.updateProjectionMatrix()
 
-    // ── 3. Spring-arm position lerp ───────────────────────────────────────
-    // Camera sits BEHIND the car (+Z) and above it (+Y)
-    camPosTarget.current.set(0, ARM_HEIGHT, carZ + dynDistance)
-    state.camera.position.lerp(camPosTarget.current, 1 - Math.exp(-POS_SPEED * delta))
+    // ── 5. Apply Orbital Camera Position with High-Speed Shake ────────────
+    const offsetX = Math.sin(cameraRotationAngle.current) * 4.0
+    const offsetZ = Math.cos(cameraRotationAngle.current) * dynDistance
 
-    // ── 4. Look-at — always point toward a spot ahead of the car ─────────
-    // carZ - LOOK_AHEAD_Z is in front of the car (more negative Z = forward)
-    state.camera.lookAt(0, LOOK_AHEAD_Y, carZ - LOOK_AHEAD_Z)
+    // High-speed vibrating rumble (Camera Shake)
+    let shakeX = 0, shakeY = 0
+    if (speed > 0.8) {
+      const shakeTime = state.clock.elapsedTime * 60
+      shakeX = Math.sin(shakeTime) * SHAKE_INTENSITY * ((speed - 0.8) / 0.2)
+      shakeY = Math.cos(shakeTime * 1.1) * SHAKE_INTENSITY * ((speed - 0.8) / 0.2)
+    }
+
+    camPosTarget.current.set(offsetX + shakeX, ARM_HEIGHT + shakeY, carZ + offsetZ)
+    state.camera.position.lerp(camPosTarget.current, 1 - Math.exp(-POS_DAMP * dt))
+
+    // ── 6. Dynamic Look-ahead ────────────────────────────────────────────
+    // Look ahead in the direction of movement (persistent direction)
+    const directionSign = directionRef.current === 'FORWARD' ? -1 : 1
+    const lookAheadTarget = LOOK_AHEAD_BASE + speedEased * (LOOK_AHEAD_MAX - LOOK_AHEAD_BASE)
+    
+    // Target position for lookAt
+    const targetLookAt = new THREE.Vector3(0, LOOK_AHEAD_Y, carZ + (directionSign * lookAheadTarget))
+    state.camera.lookAt(targetLookAt)
+    // ── 7. Frameloop Invalidation (The Ignition Sustain) ─────────────────
+    // If the camera is still rotating, keep the loop alive until it settles.
+    if (Math.abs(cameraRotationAngle.current - targetAngleRef.current) > 0.001) {
+      state.invalidate()
+    }
   })
 
   return <TrackManager scrollOffset={scroll.offset} />
