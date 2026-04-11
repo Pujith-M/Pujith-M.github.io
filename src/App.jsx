@@ -9,6 +9,7 @@ useGLTF.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import { Perf } from 'r3f-perf'
 import { Car } from './components/Car'
+import { VehicleSpawner } from './components/VehicleSpawner'
 import { Hero3D } from './components/Hero3D'
 import { CityChunk } from './components/CityEnvironment'
 import { TIMELINE } from './config/timeline' 
@@ -98,7 +99,7 @@ const DRIVE_ACCEL     = 7     // damp factor when accelerating
 const DRIVE_DECEL     = 10    // damp factor when coasting to stop
 const VELOCITY_EPSILON = 0.5  // dead-zone – stop jitter
 
-function KeyboardDrive() {
+function KeyboardDrive({ controlsEnabled }) {
   const scroll   = useScroll()
   const keys     = useKeyboard()
   const { invalidate } = useThree()
@@ -115,6 +116,8 @@ function KeyboardDrive() {
   }, [invalidate])
 
   useFrame((_state, delta) => {
+    if (!controlsEnabled) return;
+    
     // ── 0. Clamp delta ───────────────────────────────────────────────────
     // frameloop="demand" keeps the R3F clock ticking while sleeping.
     // The first frame after wake-up has delta = total idle time (e.g. 5s).
@@ -182,7 +185,7 @@ const COMMIT_THRESHOLD = 0.15 // 15% speed needed to flip camera
 const CAMERA_STIFFNESS = 1.5  // Damping stiffness for rotation
 const SHAKE_INTENSITY  = 0.04 // Intensity of high-speed rumble
 
-function CameraFollow() {
+function CameraFollow({ controlsEnabled }) {
   const scroll = useScroll()
 
   // Pre-allocated to avoid GC pressure in the render loop
@@ -196,6 +199,8 @@ function CameraFollow() {
   const lookAheadDamp = useRef(0)
 
   useFrame((state, delta) => {
+    if (!controlsEnabled) return;
+    
     const t    = scroll.offset
     const carZ = -t * TRACK_LENGTH
 
@@ -338,6 +343,7 @@ function App() {
   const [sceneReady, setSceneReady] = useState(false)
   const [hasInteracted, setHasInteracted] = useState(false)
   const [isReducedMotion, setIsReducedMotion] = useState(false)
+  const [controlsEnabled, setControlsEnabled] = useState(false)
 
   useEffect(() => {
     const media = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -409,7 +415,7 @@ function App() {
       <div className="hero-overlay" aria-live="polite">
         <h1 className="gradient-text hero-title">Pujith M</h1>
         <p className="hero-subtitle">Senior Software Engineer • Blockchain Expert</p>
-        {!hasInteracted && <p className="hero-instruction">Scroll to start • ↑ / ↓ also works</p>}
+        {!hasInteracted && controlsEnabled && <p className="hero-instruction">Scroll to start • ↑ / ↓ also works</p>}
         <div className="hero-cta-group">
           <a className="hero-cta hero-cta-primary" href="/resume.pdf" target="_blank" rel="noreferrer">
             View Resume
@@ -432,7 +438,7 @@ function App() {
 
       <Canvas 
         shadows 
-        frameloop="demand"
+        frameloop={controlsEnabled ? "demand" : "always"}
         dpr={[1, 2]}
         camera={{ position: [0, ARM_HEIGHT, ARM_DISTANCE], fov: BASE_FOV, near: 0.5, far: 800 }}
         gl={{ antialias: false, stencil: false, powerPreference: 'high-performance' }}
@@ -469,13 +475,15 @@ function App() {
         })}
         {/* Increase pages to 50 to handle the full 1200 unit journey smoothly */}
         <ScrollControls pages={50} damping={0.15}>
-          <KeyboardDrive />
-          <CameraFollow />
+          <KeyboardDrive controlsEnabled={controlsEnabled} />
+          <CameraFollow controlsEnabled={controlsEnabled} />
           <MovingLight />
           
           <group position={[0,0,0]}>
             <Suspense fallback={<SceneLoader />}>
-              <Car trackLength={TRACK_LENGTH} />
+              <VehicleSpawner setGlobalControlsEnabled={setControlsEnabled}>
+                <Car trackLength={TRACK_LENGTH} />
+              </VehicleSpawner>
             </Suspense>
             
             {/* Tracks are now managed by TrackManager inside CameraFollow for culling */}
