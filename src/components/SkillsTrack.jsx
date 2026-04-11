@@ -116,7 +116,7 @@ export function SkillsTrack({ startZ, data = [] }) {
         position={[0, LAYOUT.BILLBOARD.SIGN_HEIGHT, startZ - LAYOUT.SPACING.SECTION_BUFFER - (skills.length * 6)]} 
         title="LEAVING SKILLS" 
         subtext="END OF ZONE" 
-        color="#ec4899" 
+        color={COLORS.ACCENT_PINK} 
       />
     </group>
   )

@@ -114,9 +114,9 @@ export function ProjectsTrack({ startZ, data = [] }) {
     <group>
       <HighwaySign 
         position={[0, LAYOUT.BILLBOARD.SIGN_HEIGHT, startZ]} 
-        title="ENTERING PROJECTS" 
+        title="PROJECTS" 
         subtext="TOP CASE STUDIES" 
-        color="#14b8a6" 
+        color={COLORS.ACCENT_TEAL} 
       />
 
       {projects.map((proj, i) => (
@@ -131,9 +131,9 @@ export function ProjectsTrack({ startZ, data = [] }) {
       
       <HighwaySign 
         position={[0, LAYOUT.BILLBOARD.SIGN_HEIGHT, startZ - (projects.length * LAYOUT.SPACING.BILLBOARD_GAP) - LAYOUT.SPACING.SECTION_BUFFER]} 
-        title="LEAVING PROJECTS" 
+        title="EXIT PROJECTS" 
         subtext="END OF ZONE" 
-        color="#ec4899" 
+        color={COLORS.ACCENT_PINK} 
       />
     </group>
   )

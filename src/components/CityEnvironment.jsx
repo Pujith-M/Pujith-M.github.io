@@ -60,7 +60,7 @@ export const CityChunk = React.memo(({ startZ, length, seed = 12345 }) => {
       {/* The Asphalt Road */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, startZ - length/2]} receiveShadow>
         <planeGeometry args={[12, length + 40]} />
-        <meshStandardMaterial color="#0a0a0f" roughness={0.6} metalness={0.4} />
+        <meshStandardMaterial color={COLORS.ROAD_ASPHALT} roughness={0.6} metalness={0.4} />
       </mesh>
       
       {/* Side Curbs / Sidewalks */}
@@ -111,7 +111,7 @@ export const CityChunk = React.memo(({ startZ, length, seed = 12345 }) => {
       {/* Street Lamps */}
       <Instances limit={100} range={lamps.length}>
         <cylinderGeometry args={[0.05, 0.1, 6]} />
-        <meshStandardMaterial color="#334155" />
+        <meshStandardMaterial color={COLORS.SLATE_700} />
         {lamps.map((lamp, i) => (
           <Instance key={`lp-${i}`} position={[lamp.position[0], lamp.position[1] + 3, lamp.position[2]]} />
         ))}
@@ -119,7 +119,7 @@ export const CityChunk = React.memo(({ startZ, length, seed = 12345 }) => {
 
       <Instances limit={100} range={lamps.length}>
         <boxGeometry args={[1, 0.1, 0.2]} />
-        <meshStandardMaterial color="#1e293b" />
+        <meshStandardMaterial color={COLORS.SLATE_800} />
         {lamps.map((lamp, i) => {
           const isLeft = lamp.position[0] < 0
           return <Instance key={`lh-${i}`} position={[lamp.position[0] + (isLeft ? 0.5 : -0.5), lamp.position[1] + 6, lamp.position[2]]} />
@@ -128,7 +128,7 @@ export const CityChunk = React.memo(({ startZ, length, seed = 12345 }) => {
 
       <Instances limit={100} range={lamps.length}>
         <sphereGeometry args={[0.2]} />
-        <meshBasicMaterial color="#fcd34d" />
+        <meshBasicMaterial color={COLORS.LAMP_GLOW} />
         {lamps.map((lamp, i) => {
           const isLeft = lamp.position[0] < 0
           return <Instance key={`lg-${i}`} position={[lamp.position[0] + (isLeft ? 1 : -1), lamp.position[1] + 5.9, lamp.position[2]]} />

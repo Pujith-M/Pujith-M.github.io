@@ -1,3 +1,5 @@
+import { COLORS } from './colors'
+
 /**
  * Canonical Resume Timeline Data.
  * Centralized content for the 3D journey.
@@ -65,14 +67,14 @@ export const TIMELINE = [
     id: 'skills-core',
     title: 'Core Languages',
     items: ["Golang", "Solidity", "TypeScript", "Java"],
-    color: "#3b82f6"
+    color: COLORS.ACCENT_BLUE
   },
   {
     type: 'SKILLS',
     id: 'skills-web3',
     title: 'Web3 & Blockchain',
     items: ["Web3", "Foundry", "Smart Contracts", "Postgres"],
-    color: "#8b5cf6"
+    color: COLORS.ACCENT_PURPLE
   },
   {
     type: 'PROJECTS',

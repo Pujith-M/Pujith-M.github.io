@@ -34,7 +34,7 @@ function LogoOverlay({ logo, title }) {
     <group ref={groupRef} position={[0, 7.5, 0.11]}>
       <Html ref={htmlRef} transform center scale={0.015} zIndexRange={[100, 0]}>
         <div style={{
-          background: 'rgba(255,255,255,0.95)',
+          background: COLORS.LOGO_BG,
           padding: '8px 16px',
           borderRadius: '12px',
           display: 'flex',

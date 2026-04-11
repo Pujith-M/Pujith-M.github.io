@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { useSpring } from '@react-spring/three';
+import { CAR_CONFIG } from '../config/car';
 
 /**
  * useVehicleSpawn Hook
@@ -14,23 +15,14 @@ export const useVehicleSpawn = (onComplete) => {
   const hasImpactedRef = useRef(false);
 
   const [springs] = useSpring(() => ({
-    from: { 
-      position: [0, 20, 0], 
-      rotation: [0, Math.PI * 4, 0.4],
-      scale: 0.1 
-    },
-    to: { 
-      position: [0, 0, 0], 
-      rotation: [0, 0, 0], 
-      scale: 1 
-    },
-    // Enforce exactly 2 seconds drop as requested
-    config: { duration: 2000 },
+    from: CAR_CONFIG.SPAWN_ANIMATION.FROM,
+    to: CAR_CONFIG.SPAWN_ANIMATION.TO,
+    config: { duration: CAR_CONFIG.SPAWN_ANIMATION.DURATION },
     
     onChange: ({ value }) => {
       // Impact logic: detect explicitly when the object has landed
       const posY = Array.isArray(value.position) ? value.position[1] : value.position?.y;
-      if (posY !== undefined && posY <= 0.05 && !hasImpactedRef.current) {
+      if (posY !== undefined && posY <= CAR_CONFIG.SPAWN_ANIMATION.IMPACT_THRESHOLD && !hasImpactedRef.current) {
         hasImpactedRef.current = true;
         setIsImpacted(true); 
       }

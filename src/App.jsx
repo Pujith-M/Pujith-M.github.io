@@ -37,11 +37,10 @@ function SceneLoader() {
   return (
     <Html center>
       <div style={{
-        padding: '0.9rem 1.2rem',
-        border: '1px solid rgba(59,130,246,0.6)',
+        border: `1px solid ${COLORS.OVERLAY_BORDER}`,
         borderRadius: '12px',
-        background: 'rgba(2,6,23,0.75)',
-        color: '#e2e8f0',
+        background: COLORS.OVERLAY_BG,
+        color: COLORS.TEXT_PRIMARY || '#e2e8f0',
         letterSpacing: '0.08em',
         textTransform: 'uppercase',
         fontSize: '0.8rem'
@@ -401,7 +400,7 @@ function App() {
             borderRadius: '14px',
             border: `1px solid ${COLORS.VIVID_CYAN}80`,
             background: COLORS.SLATE_950,
-            color: '#e2e8f0',
+            color: COLORS.TEXT_PRIMARY || '#e2e8f0',
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
             fontSize: '0.78rem'
