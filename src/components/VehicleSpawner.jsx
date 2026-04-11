@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { animated } from '@react-spring/three'
+import { animated as Animated } from '@react-spring/three'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useVehicleSpawn } from '../hooks/useVehicleSpawn'
@@ -26,7 +26,7 @@ export function VehicleSpawner({ children, onSpawnComplete, setGlobalControlsEna
         const pos = springs.position.get()
         const posY = Array.isArray(pos) ? pos[1] : (pos?.y || 0)
         state.camera.lookAt(0, Math.max(posY, 1.2), 0)
-      } catch (e) {
+      } catch {
         // Fallback if get() fails
         state.camera.lookAt(0, 1.2, 0)
       }
@@ -61,9 +61,9 @@ export function VehicleSpawner({ children, onSpawnComplete, setGlobalControlsEna
 
   return (
     <group>
-      <animated.group position={springs.position} rotation={springs.rotation} scale={springs.scale}>
+      <Animated.group position={springs.position} rotation={springs.rotation} scale={springs.scale}>
         {children}
-      </animated.group>
+      </Animated.group>
       
       {/* Impact Shockwave on the ground */}
       <mesh ref={shockwaveRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]} visible={false}>

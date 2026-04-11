@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { Instances, Instance } from '@react-three/drei'
 import { COLORS } from '../config/colors'
 
@@ -12,7 +12,6 @@ export const CityChunk = React.memo(({ startZ, length, seed = 12345 }) => {
     };
 
     const list = []
-    const buildingVariations = 5
     for (let i = 0; i < 50; i++) {
       const h = 10 + random() * 50
       const w = 4 + random() * 6

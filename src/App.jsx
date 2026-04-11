@@ -14,7 +14,7 @@ import { Hero3D } from './components/Hero3D'
 import { CityChunk } from './components/CityEnvironment'
 import { TIMELINE } from './config/timeline' 
 import { COLORS } from './config/colors'
-// validateTimeline is now called in the worker
+
 
 // Total physical drive distance - Increased to 1200 based on validation audit
 const TRACK_LENGTH = 1200
@@ -63,7 +63,7 @@ function TrackManager({ scrollOffset }) {
   return (
     <Suspense fallback={<SceneLoader />}>
       {/* Hero is always at the start, Z = [0, -30] approx */}
-      {currentZ > -150 && <Hero3D isMobile={window.innerWidth < 768} />}
+      {currentZ > -150 && <Hero3D />}
 
       {/* Experience Track: Z = [-40, -370] */}
       {currentZ < 150 && currentZ > -650 && <ExperienceTrack startZ={TRACK_STARTS.EXPERIENCE} data={experienceData} />}
@@ -147,7 +147,7 @@ function KeyboardDrive({ controlsEnabled }) {
     if (velocity.current !== 0) {
       const target = scroll.el || scroll.fixed?.parentElement
       if (target) {
-        target.scrollTop += velocity.current * dt
+        target.scrollBy(0, velocity.current * dt)
 
         // Wake interaction listener (hides overlay, signals first movement)
         if (!hasWoken.current && velocity.current > 0) {

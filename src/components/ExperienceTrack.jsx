@@ -115,6 +115,7 @@ export function ExperienceTrack({ startZ = -20, data = [] }) {
         title={`ENTERING ${exp.company.toUpperCase()}`} 
         subtext={exp.role} 
         color="#14b8a6"
+        logo={exp.logo}
       />
     )
     currentZ -= LAYOUT.SPACING.SECTION_BUFFER
@@ -143,6 +144,7 @@ export function ExperienceTrack({ startZ = -20, data = [] }) {
         title={`LEAVING ${exp.company.toUpperCase()}`} 
         subtext="END OF EXPERIENCE ZONE" 
         color="#ec4899"
+        logo={exp.logo}
       />
     )
     currentZ -= LAYOUT.SPACING.SECTION_BUFFER

@@ -3,7 +3,6 @@ export const COLORS = {
   VIVID_CYAN: '#06b6d4',
   CYAN_GLOW: '#22d3ee',
   CYBER_LIME: '#a3e635',
-  LIME_GLOW: '#bef264',
   ELECTRIC_PURPLE: '#a855f7',
   
   // Neutral / Background
@@ -12,10 +11,5 @@ export const COLORS = {
   SLATE_900: '#0f172a',
   SLATE_800: '#1e293b',
   SLATE_700: '#334155',
-  SLATE_400: '#94a3b8',
-  
-  // Text
-  TEXT_PRIMARY: '#ffffff',
-  TEXT_SECONDARY: '#94a3b8',
-  TEXT_DIM: '#64748b'
+  SLATE_400: '#94a3b8'
 }

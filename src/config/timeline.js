@@ -5,11 +5,26 @@
 export const TIMELINE = [
   {
     type: 'EXPERIENCE',
+    id: 'careem',
+    company: 'Careem',
+    role: 'Senior Software Engineer',
+    period: '2025 - Present',
+    description: 'A leading ride-hailing and SuperApp in the Middle East, serving over 50M+ users.',
+    logo: '/brands/careem.png',
+    points: [
+      'Designing and developing core backend functionalities powering Hala\'s ride-booking and payment experience. (Golang, DynamoDB, Kafka, SQS)',
+      'Led the implementation of an ETA-based product switch, reducing downtime and improving reliability.',
+      'Collaborating with cross-functional teams to ensure scalable and fault-tolerant ride services in high-demand markets.'
+    ]
+  },
+  {
+    type: 'EXPERIENCE',
     id: 'unmarshal',
     company: 'Unmarshal',
     role: 'Senior Software Engineer',
-    period: '2021 - Present',
+    period: '2021 - 2025',
     description: 'Senior Software Engineer at Unmarshal, focusing on blockchain infrastructure.',
+    logo: '/brands/unmarshal.svg',
     points: [
       'Architected blockchain data indexing solution (500M+ API requests monthly).',
       'Built "Unmarshal Parser" for zero-code smart contract indexing.',
@@ -24,6 +39,7 @@ export const TIMELINE = [
     role: 'SDE-2',
     period: '2019 - 2021',
     description: 'Building financial systems and automation at scale.',
+    logo: '/brands/navi.svg',
     points: [
       'Built accounting system using Spring Boot, Kafka, and PostgreSQL.',
       'Automated collections, boosting efficiency by 15%.',
@@ -37,6 +53,7 @@ export const TIMELINE = [
     role: 'Associate Developer',
     period: '2018 - 2019',
     description: 'Modern web development for top-tier startups.',
+    logo: '/brands/mavenhive.jpg',
     points: [
       'Dashboard for CRED using React JS.',
       'Contributed to CultFit inventory management.',

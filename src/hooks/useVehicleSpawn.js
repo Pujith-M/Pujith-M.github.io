@@ -13,7 +13,7 @@ export const useVehicleSpawn = (onComplete) => {
   // Ref prevents multiple state updates during the high-speed spring phase
   const hasImpactedRef = useRef(false);
 
-  const [springs, api] = useSpring(() => ({
+  const [springs] = useSpring(() => ({
     from: { 
       position: [0, 20, 0], 
       rotation: [0, Math.PI * 4, 0.4],

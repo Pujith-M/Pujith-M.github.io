@@ -1,3 +1,3 @@
-export function Hero3D({ isMobile = false }) {
+export function Hero3D() {
   return null
 }
