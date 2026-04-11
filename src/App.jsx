@@ -26,10 +26,10 @@ const ProjectsTrack = lazy(() => import('./components/ProjectsTrack').then(modul
 const ContactTrack = lazy(() => import('./components/ContactTrack').then(module => ({ default: module.ContactTrack })))
 
 const TRACK_STARTS = {
-  EXPERIENCE: -40,
-  SKILLS: -560,
-  PROJECTS: -710,
-  CONTACT: -880
+  EXPERIENCE: -15,
+  SKILLS: -535,
+  PROJECTS: -685,
+  CONTACT: -855
 }
 
 function SceneLoader() {
@@ -193,6 +193,7 @@ function CameraFollow() {
   const targetAngleRef = useRef(0)
   const directionRef = useRef('FORWARD') // 'FORWARD' or 'BACKWARD'
   const isInitialized = useRef(false)
+  const lookAheadDamp = useRef(0)
 
   useFrame((state, delta) => {
     const t    = scroll.offset
@@ -223,13 +224,18 @@ function CameraFollow() {
     // ── 2. Hysteresis State Machine (Commit Zone) ─────────────────────────
     if (normVel > COMMIT_THRESHOLD && directionRef.current !== 'FORWARD') {
       directionRef.current = 'FORWARD'
-      // Rotate to the next even multiple of PI (completing the circle)
-      targetAngleRef.current = Math.round(targetAngleRef.current / (Math.PI * 2)) * (Math.PI * 2)
+      // Sweep the remaining 180 degrees through the LEFT side to 360 (2PI)
+      targetAngleRef.current = Math.PI * 2
     } 
     else if (normVel < -COMMIT_THRESHOLD && directionRef.current !== 'BACKWARD') {
       directionRef.current = 'BACKWARD'
-      // Rotate to the next odd multiple of PI (the half-way point)
-      targetAngleRef.current = Math.floor(targetAngleRef.current / Math.PI) * Math.PI + Math.PI
+      // If we completed a full circle, reset to 0 so we can sweep to PI again
+      if (cameraRotationAngle.current >= Math.PI * 1.9) {
+        cameraRotationAngle.current -= Math.PI * 2;
+        targetAngleRef.current = 0;
+      }
+      // Sweep 180 degrees through the RIGHT side to 180 (PI)
+      targetAngleRef.current = Math.PI
     }
 
     // ── 3. Smooth Damping for "Heavy" Cinematic Rotation ──────────────────
@@ -250,7 +256,7 @@ function CameraFollow() {
     state.camera.updateProjectionMatrix()
 
     // ── 5. Apply Orbital Camera Position with High-Speed Shake ────────────
-    const offsetX = Math.sin(cameraRotationAngle.current) * 4.0
+    const offsetX = Math.sin(cameraRotationAngle.current) * dynDistance
     const offsetZ = Math.cos(cameraRotationAngle.current) * dynDistance
 
     // High-speed vibrating rumble (Camera Shake)
@@ -264,13 +270,18 @@ function CameraFollow() {
     camPosTarget.current.set(offsetX + shakeX, ARM_HEIGHT + shakeY, carZ + offsetZ)
     state.camera.position.lerp(camPosTarget.current, 1 - Math.exp(-POS_DAMP * dt))
 
-    // ── 6. Dynamic Look-ahead ────────────────────────────────────────────
-    // Look ahead in the direction of movement (persistent direction)
-    const directionSign = directionRef.current === 'FORWARD' ? -1 : 1
-    const lookAheadTarget = LOOK_AHEAD_BASE + speedEased * (LOOK_AHEAD_MAX - LOOK_AHEAD_BASE)
+    // ── 6. Dynamic Look-ahead & Orbital Look-At ─────────────────────────
+    // Look ahead only when facing mostly forward/backward, but center on car during sweep
+    const isRotating = Math.abs(cameraRotationAngle.current - targetAngleRef.current) > 0.1
     
-    // Target position for lookAt
-    const targetLookAt = new THREE.Vector3(0, LOOK_AHEAD_Y, carZ + (directionSign * lookAheadTarget))
+    // Smoothly pull lookTarget back to the car's center while rotating
+    const directionSign = directionRef.current === 'FORWARD' ? -1 : 1
+    const targetLookAheadVal = isRotating ? 0 : (LOOK_AHEAD_BASE + speedEased * (LOOK_AHEAD_MAX - LOOK_AHEAD_BASE)) * directionSign
+    
+    lookAheadDamp.current = THREE.MathUtils.damp(lookAheadDamp.current, targetLookAheadVal, 2.5, dt)
+
+    // Target position for lookAt (look directly at car center/slightly above during orbital sweep)
+    const targetLookAt = new THREE.Vector3(0, LOOK_AHEAD_Y, carZ + lookAheadDamp.current)
     state.camera.lookAt(targetLookAt)
     // ── 7. Frameloop Invalidation (The Ignition Sustain) ─────────────────
     // If the camera is still rotating, keep the loop alive until it settles.
